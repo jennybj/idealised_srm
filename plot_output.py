@@ -642,7 +642,7 @@ cb.set_label("GDP per capita in 1990\n(1990 US$)", rotation=270, size=14, labelp
 cb.ax.tick_params(labelsize=14)
 
 plt.savefig(
-    "histogram_GDPper_difference_GDP_share.pdf",
+    "figures/histogram_GDPper_difference_GDP_share.pdf",
     dpi=300,
     bbox_inches="tight",
     pad=0.1,
@@ -722,7 +722,7 @@ ax1.xaxis.set_tick_params(labelsize=12)
 ax1.yaxis.set_tick_params(labelsize=12)
 bx1.yaxis.set_tick_params(labelsize=12, color="grey")
 
-fig1.savefig("difference_emissions.pdf")
+fig1.savefig("figures/difference_emissions.pdf")
 
 # print("Sum of emission difference: ", np.sum(diff_emissions))
 
@@ -781,8 +781,8 @@ fig2.text(0.01, 0.33, "(c)", fontsize=18, wrap=True)
 
 fig2.subplots_adjust(left=0.1, right=0.98, top=0.96, bottom=0.05, hspace=0.18)
 
-fig2.savefig("population_weighted_temperature_and_GDP_per_capita.pdf")
-fig2.savefig("population_weighted_temperature_and_GDP_per_capita.png")
+fig2.savefig("figures/population_weighted_temperature_and_GDP_per_capita.pdf")
+fig2.savefig("figures/population_weighted_temperature_and_GDP_per_capita.png")
 
 fig3, ax3 = plt.subplots(nrows=2, ncols=1, figsize=(10, 12))
 
@@ -886,8 +886,8 @@ fig3.text(0.01, 0.49, "(b)", fontsize=16, wrap=True)
 
 fig3.subplots_adjust(left=0.1, right=0.98, top=0.96, bottom=0.05, hspace=0.1)
 
-fig3.savefig("emissions_and_population_weighted_temperature_compare.pdf")
-exit()
+fig3.savefig("figures/emissions_and_population_weighted_temperature_compare.pdf")
+
 
 fig4, ax4 = plt.subplots(nrows=1, ncols=1, figsize=(7, 5))
 
@@ -912,7 +912,7 @@ ax4.xaxis.set_tick_params(labelsize=12)
 ax4.yaxis.set_tick_params(labelsize=12)
 ax4.legend(fontsize=16)
 
-fig4.savefig("area_weighted_temperature.pdf")
+fig4.savefig("figures/area_weighted_temperature.pdf")
 
 # --------------------------------------------------------------------------------------
 
@@ -1267,7 +1267,7 @@ fig5.text(0.01, 0.33, "(c)", fontsize=12, wrap=True)
 
 fig5.subplots_adjust(left=0.11, right=0.83, top=0.97, bottom=0.04, hspace=0.22)
 
-fig5.savefig("country_difference_gdpper_percent_SRM_2090_2099.pdf")
-fig5.savefig("country_difference_gdpper_percent_SRM_2090_2099.png")
+fig5.savefig("figures/country_difference_gdpper_percent_SRM_2090_2099.pdf")
+fig5.savefig("figures/country_difference_gdpper_percent_SRM_2090_2099.png")
 
 plt.close()
