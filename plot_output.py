@@ -104,26 +104,11 @@ for isim in range(len(names)):
         exec(simulations[isim + 1] + "_" + ivar + "= var")
 
 
-"""
-# Read in my fixed point for comparison:
-test_wealth = np.loadtxt(file_path + "fixed_point_wealth.txt", skiprows=2)[:nyears, :]
-test_temperature = np.loadtxt(file_path + "fixed_point_regtemp.txt", skiprows=2)[
-    :nyears, :
-]
-test_capital_scaled = np.loadtxt(file_path + "fixed_point_capital.txt", skiprows=2)[
-    :nyears, :
-]
-test_expected_emissions = np.loadtxt(
-    file_path + "fixed_point_emissions.txt", skiprows=2
-)[:nyears, :]
-"""
 # Read in Henri's data:
 srm_ai = np.loadtxt("standalone_output/ai.txt")[:, 1 : nyears + 1].T
 srm_fp_gdp = np.loadtxt("standalone_output/reg_gdp.txt")[:, 1 : nyears + 1].T
 srm_fp_capital = np.loadtxt("standalone_output/capital.txt")[:, 1 : nyears + 1].T
-srm_fp_emissions = np.loadtxt("standalone_output/regional_emissions.txt")[
-    :, 1 : nyears + 1
-].T
+#srm_fp_emissions = np.loadtxt("standalone_output/regional_emissions.txt")[:, 1 : nyears + 1].T
 srm_fp_regtemp = np.loadtxt("standalone_output/regional_temperature.txt")[
     :, 1 : nyears + 1
 ].T
@@ -314,31 +299,9 @@ def add_global_value(
 
 # COMPARE FIXED POINTS
 
-# test_capital = descale(test_capital_scaled, ai)
-# test_gdp = test_wealth - (1 - delta) * test_capital
-
 srm_fp_wealth = srm_fp_gdp + (1 - delta) * descale(srm_fp_capital, srm_ai)
 srm_fp_capital = descale(srm_fp_capital, srm_ai)
-"""
-print(srm_fp_capital[:, 0] - test_capital[:, 0])
-# print(srm_fp_gdp[:, 0] - test_gdp[:, 0])
-# print(srm_fp_wealth[:, 0] - test_wealth[:, 0])
-print(srm_fp_emissions[:, 0] * 1e3 - test_expected_emissions[:, 0])
-print(srm_fp_regtemp[:, 0] - test_temperature[:, 0])
-print(
-    "Capital ok, gdp, wealth and emissions not exactly the same. Appears to be some rounding error arising from the energy use/emissions or temperature..."
-)
-"""
-"""
-price = (
-    (
-        capital_scaled[0, 0] ** (alpha - 1)
-        / (((rss + delta) / (alpha * theta)) * (b ** (-1 / theta)))
-    )
-    ** (theta / (1 - theta))
-) * (1 - theta)
-print(price, capital_scaled[0, 0], srm_fp_capital[0, 0])
-"""
+
 # --------------------------------------------------------------------------------------
 
 
@@ -506,6 +469,27 @@ for c, country in enumerate(country_indices.keys()):
 
 # Make list of chosen countries:
 chosen_countries = all_countries
+text_countires = [
+    "Norway",
+    "United States",
+    "Russia",
+    "United Kingdom",
+    "China",
+    "Somalia",
+    "Germany",
+    "Sudan",
+    "Canada",
+    "New Zealand",
+    "Spain",
+    "Somalia",
+    "Brazil",
+    "India",
+    "Saudi Arabia",
+    "Iraq",
+    "Niger",
+    "Mali",
+    "Namibia",
+]  #'Algeria', 'Indonesia'
 
 population_countries = np.zeros((nyears, len(chosen_countries)))
 
@@ -555,7 +539,7 @@ start_temp_countries = np.average(srm_fp_temp_countries[:10, :], axis=0)
 
 # --------------------------------------------------------------------------------------
 
-# MAKE HISTOGRAM
+# PLOT HISTOGRAM
 
 colors = sns.color_palette("RdYlBu", 5).as_hex()
 colors[2] = "#A9A9A9"
@@ -570,6 +554,8 @@ df = pd.DataFrame(initial_gdp_share, columns=["initial_gdp_share"], index=all_co
 print(srm_e1_gdpper_country[0, :])
 print(base_e1_gdpper_country[0, :])
 print(srm_fp_gdpper_country[0, :])
+
+print(np.max(srm_e1_gdpper_country[0, :]))
 
 df["final_gdp_share"] = final_gdp_share
 df["gdp_per_capita_1990"] = srm_e1_gdpper_country[0, :]
@@ -590,7 +576,9 @@ df["initial_population"] = population_countries[0, :]
 print(population_countries[0, :])
 
 
-gdp_bin = [3750, 7500, 15000, 30000, 200000]
+#gdp_bin = [3750, 7500, 15000, 30000, 200000]
+gdp_bin = [3500, 7000, 14000, 28000, 200000]
+gdp_bin = [3000, 6000, 12000, 24000, 200000]
 for ig, gdpcap in enumerate(gdp_bin[::-1]):
     df.loc[df["gdp_per_capita_1990"] < gdpcap, "color"] = colors[ig]
 
@@ -615,10 +603,39 @@ print(df["cum_gdp_share"]["United States"])
 # Write data to file:
 df.to_csv("geoengineering_histogram_data.csv")
 
-fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 7))
+fig1, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(10, 7))
 p_bar = plt.bar(
     bins[:-1], heights, width=widths, color=df["color"], align="edge", alpha=0.8
 )
+
+# Add country names:
+for c, country in enumerate(df.index):
+    if country in text_countires:
+        x = bins[c+1]
+        y = df["gdpper_diff"][country] + 0.7
+        color = df["color"][c]
+        alignment = 'right'
+
+        if country in ["Norway", "Russia", "Canada", "Germany"]:
+            y -= 3.5
+            x = bins[c]
+            alignment = 'left'
+            if country == "Norway":
+                y -=3
+                # Add line:
+                ax1.vlines(bins[c] + 0.5*(bins[c+1] - bins[c]), y+3, df["gdpper_diff"][country]-0.7, linewidth=0.5, color=color)
+        elif country == "United States":
+            x = bins[c] + 0.5*(bins[c+1] - bins[c])
+            alignment = 'center'
+        elif country == "Namibia":
+            y +=1
+
+        ax1.text(
+            x,
+            y,
+            country,horizontalalignment=alignment,
+            fontsize=10,color=color)
+
 
 
 plt.xlim([-0.1, 100.1])
@@ -630,13 +647,12 @@ plt.ylabel("GDP per capita difference due to solar reduction (%)", size=16)
 plt.xlabel("Cumulative share of global GDP (%)", size=16)
 
 # plot colorbar
-# ax_cb = fig.add_axes([0.74, 0.15, 0.03, 0.28], frame_on=False)
-ax_cb = fig.add_axes([0.14, 0.55, 0.03, 0.28], frame_on=False)
+ax_cb = fig1.add_axes([0.14, 0.55, 0.03, 0.28], frame_on=False)
 
 colors_4cb = ListedColormap(colors[::-1])
 norm = BoundaryNorm([0] + gdp_bin, 1 + colors_4cb.N)
 cb = ColorbarBase(
-    ax_cb, cmap=colors_4cb, norm=norm, ticks=[0, 3750, 7500, 15000, 30000], alpha=0.8
+    ax_cb, cmap=colors_4cb, norm=norm, ticks=gdp_bin[:-1], alpha=0.8
 )
 cb.set_label("GDP per capita in 1990\n(1990 US$)", rotation=270, size=14, labelpad=35)
 cb.ax.tick_params(labelsize=14)
@@ -649,140 +665,11 @@ plt.savefig(
     alpha=0.4,
 )
 
-# --------------------------------------------------------------------------------------
-
-# PLOT
-
-# Check emissions output:
-
-years = np.arange(1990, 1990 + nyears + 1)
-
-fig1, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(7, 5))
-bx1 = ax1.twinx()
-
-fig1.subplots_adjust(right=0.85)
-colors = [
-    "cornflowerblue",
-    "royalblue",
-    "red",
-    "orange",
-    "green",
-    "black",
-    "grey",
-    "lightgrey",
-]
-labels = [
-    "Standalone SRM",
-    "Standalone baseline",
-    "SRM e1",
-    "SRM e2",
-    "SRM e3",
-    "Base e1",
-    "Base e2",
-    "Base e3",
-]
-
-for isim, sim in enumerate(simulations[2:]):
-    if "base" in sim:
-        fp_cumulative_emissions = base_fp_cumulative_emissions
-        fp_sum_actual_emissions = base_fp_sum_actual_emissions
-    else:
-        fp_cumulative_emissions = srm_fp_cumulative_emissions
-        fp_sum_actual_emissions = srm_fp_sum_actual_emissions
-
-    exec("sim_years = " + sim + "_wealth.shape[0]")
-    exec("diff_emissions = " + sim + "_diff_emissions")
-    exec("diff_cumulative_emissions = " + sim + "_diff_cumulative_emissions")
-    color = colors[isim + 2]
-    label = labels[isim + 2]
-
-    ax1.plot(
-        years[:sim_years],
-        100 * diff_emissions / fp_sum_actual_emissions[:sim_years],
-        linewidth=2,
-        color=color,
-        label=label,
-    )
-    bx1.plot(
-        years[:sim_years],
-        100 * diff_cumulative_emissions / fp_cumulative_emissions[:sim_years],
-        linewidth=2,
-        color=color,
-        linestyle=":",
-    )
-
-
-ax1.set_xlabel("Year", fontsize=14)
-ax1.set_ylabel("Difference in yearly emissions (%)", fontsize=14)
-bx1.set_ylabel("Difference in cumulative emissions (%)", fontsize=14, color="grey")
-ax1.legend()
-# ax1.set_title('1% growth', fontsize=14)
-
-ax1.xaxis.set_tick_params(labelsize=12)
-ax1.yaxis.set_tick_params(labelsize=12)
-bx1.yaxis.set_tick_params(labelsize=12, color="grey")
-
-fig1.savefig("figures/difference_emissions.pdf")
-
-# print("Sum of emission difference: ", np.sum(diff_emissions))
-
+exit()
 
 # --------------------------------------------------------------------------------------
 
-# PLOT AVERAGE TEMPERATURE AGAINST TIME
-
-# Check temperature and GDP
-
-fig2, ax2 = plt.subplots(nrows=3, ncols=1, figsize=(10, 17))
-
-for isim, sim in enumerate(simulations):
-    exec("sim_years = " + sim + "_wealth.shape[0]")
-    exec("pop_temp = " + sim + "_pop_temp")
-    exec("global_gdp_change = " + sim + "_global_gdp_change")
-    exec("global_gdpper_change = " + sim + "_global_gdpper_change")
-
-    color = colors[isim]
-    label = labels[isim]
-
-    # Plot temperature:
-    ax2[0].plot(years[:sim_years], pop_temp, label=label, linewidth=3, color=color)
-
-    # Plot GDP:
-    ax2[1].plot(
-        years[:sim_years], global_gdp_change, linewidth=3, color=color, label=label
-    )
-
-    # Plot GDP per capita:
-    ax2[2].plot(
-        years[:sim_years], global_gdpper_change, linewidth=3, color=color, label=label
-    )
-
-
-ax2[0].set_title("Global temperature change", fontsize=20)
-ax2[1].set_title("Global GDP change", fontsize=20)
-ax2[2].set_title("Global GDP per capita change", fontsize=20)
-
-
-ax2[2].set_xlabel("Year", fontsize=20)
-ax2[0].set_ylabel(r"$\Delta$temperature " + "(\N{DEGREE SIGN}C)", fontsize=20)
-ax2[1].set_ylabel(r"$\Delta$GDP (%)", fontsize=20)
-ax2[2].set_ylabel(r"$\Delta$GDP/capita (%)", fontsize=20)
-for ax in ax2:
-    ax.xaxis.set_tick_params(labelsize=16)
-    ax.yaxis.set_tick_params(labelsize=16)
-
-ax2[1].legend(fontsize=20)
-
-# fig2.text(0.01, 0.98, "(a)", fontsize=18, wrap=True)
-# fig2.text(0.01, 0.49, "(b)", fontsize=18, wrap=True)
-fig2.text(0.01, 0.98, "(a)", fontsize=18, wrap=True)
-fig2.text(0.01, 0.66, "(b)", fontsize=18, wrap=True)
-fig2.text(0.01, 0.33, "(c)", fontsize=18, wrap=True)
-
-fig2.subplots_adjust(left=0.1, right=0.98, top=0.96, bottom=0.05, hspace=0.18)
-
-fig2.savefig("figures/population_weighted_temperature_and_GDP_per_capita.pdf")
-fig2.savefig("figures/population_weighted_temperature_and_GDP_per_capita.png")
+# PLOT EMISSIONS AND AVERAGE TEMPERATURE AGAINST TIME
 
 fig3, ax3 = plt.subplots(nrows=2, ncols=1, figsize=(10, 12))
 
@@ -888,31 +775,6 @@ fig3.subplots_adjust(left=0.1, right=0.98, top=0.96, bottom=0.05, hspace=0.1)
 
 fig3.savefig("figures/emissions_and_population_weighted_temperature_compare.pdf")
 
-
-fig4, ax4 = plt.subplots(nrows=1, ncols=1, figsize=(7, 5))
-
-
-for isim, sim in enumerate(simulations[:]):
-    exec("sim_years = " + sim + "_wealth.shape[0]")
-    exec("area_temp = " + sim + "_area_temp")
-    color = colors[isim]
-    label = labels[isim]
-
-    ax4.plot(
-        years[:sim_years],
-        area_temp,
-        label=label,
-        linewidth=3,
-        color=color,
-    )
-
-ax4.set_xlabel("Year", fontsize=16)
-ax4.set_ylabel("Temperature change (\N{DEGREE SIGN}C)", fontsize=16)
-ax4.xaxis.set_tick_params(labelsize=12)
-ax4.yaxis.set_tick_params(labelsize=12)
-ax4.legend(fontsize=16)
-
-fig4.savefig("figures/area_weighted_temperature.pdf")
 
 # --------------------------------------------------------------------------------------
 
@@ -1031,28 +893,7 @@ ind = np.argsort(diff_gdpper)
 #    print(all_countries[ind[i]], diff_gdpper[ind[i]])
 
 
-text_countires = [
-    "Norway",
-    "United States",
-    "Russia",
-    "United Kingdom",
-    "China",
-    "Somalia",
-    "Germany",
-    "Sudan",
-    "Canada",
-    "New Zealand",
-    "Spain",
-    "Somalia",
-    "Brazil",
-    "India",
-    "Saudi Arabia",
-    "Iraq",
-    "Niger",
-    "Mali",
-    "Namibia",
-]  #'Algeria', 'Indonesia'
-# text_countires = all_countries
+
 
 edgecolors = []
 zorders = []
@@ -1209,6 +1050,8 @@ add_bubble_label(
     title="Initial\nGDP/capita",
 )
 """
+minval = np.min(dpopulation_country_decade)
+
 # Generate color bar to indicate population change:
 cbar_ax = fig5.add_axes([0.86, 0.699, 0.02, 0.14])
 cbar = fig5.colorbar(pscat1, cax=cbar_ax)
@@ -1218,7 +1061,10 @@ cbar.set_label(
     rotation=270,
     labelpad=18,
 )
+
+cbar.set_ticks([-100,0,200,400,600,800,1000])
 cbar.ax.tick_params(labelsize=10)
+
 
 """
 # Generate color bar to indicate 2000 temperature:
