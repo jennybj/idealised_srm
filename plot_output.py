@@ -665,7 +665,6 @@ plt.savefig(
     alpha=0.4,
 )
 
-exit()
 
 # --------------------------------------------------------------------------------------
 
@@ -673,28 +672,31 @@ exit()
 
 fig3, ax3 = plt.subplots(nrows=2, ncols=1, figsize=(10, 12))
 
+years = np.arange(1990, 2101)
 
 for isim, sim in enumerate(simulations[2:]):
     exec("sim_years = " + sim + "_wealth.shape[0]")
     if "base" in sim:
         color = "blue"
+        start_year = 0
     else:
         color = "red"
+        start_year = 39
 
     exec("sum_actual_emissions = " + sim + "_sum_actual_emissions")
     exec("pop_temp = " + sim + "_pop_temp")
 
     ax3[0].plot(
-        years[:sim_years],
-        sum_actual_emissions / 1e3,
+        years[start_year:sim_years],
+        sum_actual_emissions[start_year:] / 1e3,
         linewidth=1,
         alpha=0.5,
         color=color,
     )
 
     ax3[1].plot(
-        years[:sim_years],
-        pop_temp,
+        years[start_year:sim_years],
+        pop_temp[start_year:],
         linewidth=1,
         alpha=0.5,
         color=color,
@@ -745,15 +747,15 @@ ax3[1].plot(
 )
 
 ax3[0].plot(
-    years[:sim_years],
-    avg_srm_sum_actual_emissions / 1e3,
+    years[39:sim_years],
+    avg_srm_sum_actual_emissions[39:] / 1e3,
     linewidth=3,
     color="red",
     label="With SRM",
 )
 ax3[1].plot(
-    years[:sim_years],
-    avg_srm_pop_temp,
+    years[39:sim_years],
+    avg_srm_pop_temp[39:],
     linewidth=3,
     color="red",
     label="With SRM",
