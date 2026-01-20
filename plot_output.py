@@ -6,16 +6,20 @@ import os as os
 import sys as sys
 from collections import defaultdict
 
+import cmasher as cmr
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn.apionly as sns
 from matplotlib.colorbar import ColorbarBase
 from matplotlib.colors import (
+    Colormap,
     BoundaryNorm,
     LinearSegmentedColormap,
     ListedColormap,
     TwoSlopeNorm,
+    to_hex,
+    to_rgb,
 )
 
 sys.path.insert(
@@ -685,6 +689,7 @@ for isim, sim in enumerate(simulations[2:]):
 
     exec("sum_actual_emissions = " + sim + "_sum_actual_emissions")
     exec("pop_temp = " + sim + "_pop_temp")
+    exec("area_temp = " + sim + "_area_temp")
 
     ax3[0].plot(
         years[start_year:sim_years],
@@ -702,8 +707,19 @@ for isim, sim in enumerate(simulations[2:]):
         color=color,
     )
 
+    ax3[1].plot(
+        years[start_year:sim_years],
+        area_temp[start_year:],
+        linewidth=1,
+        alpha=0.5,
+        color="grey",
+    )
+
 avg_srm_pop_temp = np.average(
     np.stack((srm_e1_pop_temp, srm_e2_pop_temp, srm_e3_pop_temp)), axis=0
+)
+avg_srm_area_temp = np.average(
+    np.stack((srm_e1_area_temp, srm_e2_area_temp, srm_e3_area_temp)), axis=0
 )
 avg_srm_sum_actual_emissions = np.average(
     np.stack(
@@ -715,7 +731,7 @@ avg_srm_sum_actual_emissions = np.average(
     ),
     axis=0,
 )
-print(avg_srm_sum_actual_emissions.shape)
+
 avg_base_sum_actual_emissions = np.average(
     np.stack(
         (
@@ -729,6 +745,9 @@ avg_base_sum_actual_emissions = np.average(
 
 avg_base_pop_temp = np.average(
     np.stack((base_e1_pop_temp, base_e2_pop_temp, base_e3_pop_temp)), axis=0
+)
+avg_base_area_temp = np.average(
+    np.stack((base_e1_area_temp, base_e2_area_temp, base_e3_area_temp)), axis=0
 )
 
 ax3[0].plot(
@@ -745,6 +764,13 @@ ax3[1].plot(
     color="blue",
     label="Without SRM",
 )
+ax3[1].plot(
+    years[:sim_years],
+    avg_base_area_temp,
+    linewidth=3,
+    color="grey",
+    label="Area weighted",
+)
 
 ax3[0].plot(
     years[39:sim_years],
@@ -760,6 +786,16 @@ ax3[1].plot(
     color="red",
     label="With SRM",
 )
+ax3[1].plot(
+    years[39:sim_years],
+    avg_srm_area_temp[39:],
+    linewidth=3,
+    color="grey",
+)
+
+print("Difference in emissions: ", avg_srm_sum_actual_emissions - avg_base_sum_actual_emissions)
+print("Difference in emissions (%): ", 100*(avg_srm_sum_actual_emissions - avg_base_sum_actual_emissions)/avg_base_sum_actual_emissions)
+print("Total difference: ", np.sum(avg_srm_sum_actual_emissions[40:] - avg_base_sum_actual_emissions[40:]), 100*np.sum(avg_srm_sum_actual_emissions[40:] - avg_base_sum_actual_emissions[40:])/np.sum(avg_base_sum_actual_emissions))
 
 ax3[1].set_xlabel("Year", fontsize=20)
 ax3[0].set_ylabel("Emissions (GtC)", fontsize=20)
@@ -816,9 +852,18 @@ cdict3 = {
     ),
 }
 
-cmap = LinearSegmentedColormap("BlueRed3", cdict3)
 
-population_cmap = cmap  #'RdYlBu'
+cmap = LinearSegmentedColormap("BlueRed3", cdict3)
+cmap_red = cmr.get_sub_cmap(cmap, 0.5, 1)
+cmap_blue = cmr.get_sub_cmap(cmap, 0.45, 0.5)
+
+colors1 = cmap_blue(np.linspace(0., 1, 128))
+colors2 = cmap_red(np.linspace(0, 1, 128))
+
+# combine them and build a new colormap
+colors = np.vstack((colors1, colors2))
+population_cmap = LinearSegmentedColormap.from_list('my_colormap', colors)
+
 vmin2 = -100
 vmax2 = 1000
 divnorm = TwoSlopeNorm(vmin=vmin2, vcenter=0, vmax=vmax2)
