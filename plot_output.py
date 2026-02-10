@@ -90,7 +90,6 @@ variables = [
     "wealth",
     "regtemp",
     "capital",
-    "expected_emissions",
     "actual_emissions",
 ]
 
@@ -100,12 +99,21 @@ wealth = np.loadtxt(
 nyears = wealth.shape[0]
 
 for isim in range(len(names)):
+
     for ivar in variables:
         var = np.loadtxt(file_path + names[isim] + "_" + ivar + ".txt", skiprows=2)[
             :nyears, :
         ]
         print(simulations[isim + 1] + "_" + ivar + "= var")
         exec(simulations[isim + 1] + "_" + ivar + "= var")
+
+    if isim != 0:
+        var = np.loadtxt(file_path + names[isim] + "_global_temp.txt", usecols=1)[:nyears]
+        print(simulations[isim + 1] + "_global_temp= var")
+        exec(simulations[isim + 1] + "_global_temp= var")
+
+
+
 
 
 # Read in Henri's data:
@@ -272,6 +280,33 @@ def add_bubble_label(fig, position, labels, label_values, title):
     )
     legend.get_title().set_fontsize("12")
 
+def add_country_names(ax, x, y, tx, ty, country_name, cmap, color, size, horizontalalignment, vmin=None, vmax=None, norm=None, text=True):
+
+    ax.scatter(
+        x,
+        y,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
+        norm=norm,
+        edgecolors="k",
+        linewidth=0.2,
+        alpha=0.8,
+        label=None,
+        c=color,
+        s=size,
+    )
+
+    if text==True:
+        ax.text(
+            tx,
+            ty,
+            country_name,
+            fontsize=10,
+            zorder=3,
+            horizontalalignment=horizontalalignment,
+        )
+
 
 def add_global_value(
     ax, x, y, color, size, cmap, vmin=None, vmax=None, norm=None, text=True
@@ -404,19 +439,6 @@ for isim, sim in enumerate(simulations):
     exec(sim + "_sum_gdp_detrended = sum_gdp_detrended")
     exec(sim + "_sum_gdpper_detrended = sum_gdpper_detrended")
 
-    global_gdp_change = (
-        100
-        * (sum_gdp_detrended - srm_fp_sum_gdp_detrended[0])
-        / srm_fp_sum_gdp_detrended[0]
-    )
-    global_gdpper_change = (
-        100
-        * (sum_gdpper_detrended - srm_fp_sum_gdpper_detrended[0])
-        / srm_fp_sum_gdpper_detrended[0]
-    )
-    exec(sim + "_global_gdp_change = global_gdp_change")
-    exec(sim + "_global_gdpper_change = global_gdpper_change")
-
     # Calculate area weighted temperature:
     area_temp = np.average(
         regtemp - pi_temperatures, axis=1, weights=np.cos(np.deg2rad(diam_latitudes))
@@ -424,6 +446,11 @@ for isim, sim in enumerate(simulations):
 
     exec(sim + "_pop_temp = pop_temp")
     exec(sim + "_area_temp = area_temp")
+
+base_global_gdpper = np.average(np.stack((base_e1_sum_gdpper_detrended,base_e2_sum_gdpper_detrended,base_e3_sum_gdpper_detrended),axis=0), axis=0)
+srm_global_gdpper = np.average(np.stack((srm_e1_sum_gdpper_detrended,srm_e2_sum_gdpper_detrended,srm_e3_sum_gdpper_detrended),axis=0), axis=0)
+
+
 
 
 # --------------------------------------------------------------------------------------
@@ -496,6 +523,8 @@ text_countires = [
 ]  #'Algeria', 'Indonesia'
 
 population_countries = np.zeros((nyears, len(chosen_countries)))
+print(nyears)
+
 
 for isim, sim in enumerate(simulations):
     exec("sim_years = " + sim + "_wealth.shape[0]")
@@ -503,8 +532,8 @@ for isim, sim in enumerate(simulations):
     # Make arrays with the GDP, damages, and PI temperature of the chosen countries:
     exec(sim + "_gdp_country = np.zeros((sim_years, len(chosen_countries)))")
     exec(sim + "_gdpper_country = np.zeros((sim_years, len(chosen_countries)))")
-    exec(sim + "_dtemp_countries = np.zeros((sim_years, len(chosen_countries)))")
-    exec(sim + "_temp_countries = np.zeros((sim_years, len(chosen_countries)))")
+    exec(sim + "_dtemp_country = np.zeros((sim_years, len(chosen_countries)))")
+    exec(sim + "_temp_country = np.zeros((sim_years, len(chosen_countries)))")
 
 
 for c, country in enumerate(chosen_countries):
@@ -527,19 +556,604 @@ for c, country in enumerate(chosen_countries):
             )
             exec(
                 sim
-                + "_dtemp_countries[iyear, c] = calculate_regional_mean("
+                + "_dtemp_country[iyear, c] = calculate_regional_mean("
                 + sim
                 + "_regtemp[iyear, :] - pi_temperatures, indices, weights=pops[iyear, :])"
             )
             exec(
                 sim
-                + "_temp_countries[iyear, c] = calculate_regional_mean("
+                + "_temp_country[iyear, c] = calculate_regional_mean("
                 + sim
                 + "_regtemp[iyear, :], indices, weights=pops[iyear, :])"
             )
 
-start_temp_countries = np.average(srm_fp_temp_countries[:10, :], axis=0)
+base_dtemp_country = np.average(np.stack((base_e1_dtemp_country,base_e2_dtemp_country,base_e3_dtemp_country),axis=0), axis=0)
+srm_dtemp_country = np.average(np.stack((srm_e1_dtemp_country,srm_e2_dtemp_country,srm_e3_dtemp_country),axis=0), axis=0)
+base_gdp_country = np.average(np.stack((base_e1_gdp_country,base_e2_gdp_country,base_e3_gdp_country),axis=0), axis=0)
+srm_gdp_country = np.average(np.stack((srm_e1_gdp_country,srm_e2_gdp_country,srm_e3_gdp_country),axis=0), axis=0)
+base_gdpper_country = np.average(np.stack((base_e1_gdpper_country,base_e2_gdpper_country,base_e3_gdpper_country),axis=0), axis=0)
+srm_gdpper_country = np.average(np.stack((srm_e1_gdpper_country,srm_e2_gdpper_country,srm_e3_gdpper_country),axis=0), axis=0)
 
+start_temp_country = np.average(srm_fp_temp_country[:10, :], axis=0)
+
+
+# --------------------------------------------------------------------------------------
+
+# PLOT EMISSIONS AND AVERAGE TEMPERATURE AGAINST TIME
+
+fig3, ax3 = plt.subplots(nrows=2, ncols=1, figsize=(10, 12))
+
+years = np.arange(1990, 2101)
+
+for isim, sim in enumerate(simulations[2:]):
+    exec("sim_years = " + sim + "_wealth.shape[0]")
+    if "base" in sim:
+        color = "blue"
+        start_year = 0
+    else:
+        color = "red"
+        start_year = 39
+
+    exec("sum_actual_emissions = " + sim + "_sum_actual_emissions")
+    exec("pop_temp = " + sim + "_pop_temp")
+    exec("area_temp = " + sim + "_area_temp")
+    exec("global_temp = " + sim + "_global_temp - global_pi_temperature")
+
+    ax3[0].plot(
+        years[start_year:sim_years],
+        sum_actual_emissions[start_year:] / 1e3,
+        linewidth=1,
+        alpha=0.5,
+        color=color,
+    )
+
+    ax3[1].plot(
+        years[start_year:sim_years],
+        pop_temp[start_year:],
+        linewidth=1,
+        alpha=0.4,
+        color=color,
+    )
+
+    ax3[1].plot(
+        years[start_year:sim_years],
+        area_temp[start_year:],
+        linewidth=1,
+        alpha=0.4,
+        color=color,
+        linestyle=":",
+    )
+    ax3[1].plot(
+        years[start_year:sim_years],
+        global_temp[start_year:],
+        linewidth=1,
+        alpha=0.4,
+        color=color,
+        linestyle="--",
+    )
+
+avg_srm_pop_temp = np.average(
+    np.stack((srm_e1_pop_temp, srm_e2_pop_temp, srm_e3_pop_temp)), axis=0
+)
+avg_srm_area_temp = np.average(
+    np.stack((srm_e1_area_temp, srm_e2_area_temp, srm_e3_area_temp)), axis=0
+)
+avg_srm_global_temp = np.average(
+    np.stack((srm_e1_global_temp, srm_e2_global_temp, srm_e3_global_temp)), axis=0
+) - global_pi_temperature
+avg_srm_sum_actual_emissions = np.average(
+    np.stack(
+        (
+            srm_e1_sum_actual_emissions,
+            srm_e2_sum_actual_emissions,
+            srm_e3_sum_actual_emissions,
+        )
+    ),
+    axis=0,
+)
+
+avg_base_sum_actual_emissions = np.average(
+    np.stack(
+        (
+            base_e1_sum_actual_emissions,
+            base_e2_sum_actual_emissions,
+            base_e3_sum_actual_emissions,
+        )
+    ),
+    axis=0,
+)
+
+avg_base_pop_temp = np.average(
+    np.stack((base_e1_pop_temp, base_e2_pop_temp, base_e3_pop_temp)), axis=0
+)
+avg_base_area_temp = np.average(
+    np.stack((base_e1_area_temp, base_e2_area_temp, base_e3_area_temp)), axis=0
+)
+avg_base_global_temp = np.average(
+    np.stack((base_e1_global_temp, base_e2_global_temp, base_e3_global_temp)), axis=0
+) - global_pi_temperature
+
+ax3[0].plot(
+    years[:sim_years],
+    avg_base_sum_actual_emissions / 1e3,
+    linewidth=3,
+    color="blue",
+    label="Without SRM",
+)
+ax3[1].plot(
+    years[:sim_years],
+    avg_base_pop_temp,
+    linewidth=3,
+    color="blue",
+)
+ax3[1].plot(
+    years[:sim_years],
+    avg_base_area_temp,
+    linewidth=3,
+    color="blue",
+    linestyle=":",
+)
+ax3[1].plot(
+    years[:sim_years],
+    avg_base_global_temp,
+    linewidth=3,
+    color="blue",
+    linestyle="--",
+)
+
+
+ax3[0].plot(
+    years[39:sim_years],
+    avg_srm_sum_actual_emissions[39:] / 1e3,
+    linewidth=3,
+    color="red",
+    label="With SRM",
+)
+ax3[1].plot(
+    years[39:sim_years],
+    avg_srm_pop_temp[39:],
+    linewidth=3,
+    color="red",
+)
+ax3[1].plot(
+    years[39:sim_years],
+    avg_srm_area_temp[39:],
+    linewidth=3,
+    color="red",
+    linestyle=":",
+)
+ax3[1].plot(
+    years[39:sim_years],
+    avg_srm_global_temp[39:],
+    linewidth=3,
+    color="red",
+    linestyle="--",
+)
+
+ax3[1].plot(0,0, color="k", label="Area-weighted", linewidth=3, linestyle=':')
+ax3[1].plot(0,0, color="k", label="Population-weighted", linewidth=3)
+ax3[1].plot(0,0, color="k", label="Global", linewidth=3, linestyle="--")
+
+ax3[1].set_xlim(1985,2105)
+
+print("SRM last 20 years: ", np.mean(avg_srm_area_temp[-20:]), np.mean(avg_srm_pop_temp[-20:]))
+print("SRM last 10 years: ", np.mean(avg_srm_area_temp[-10:]), np.mean(avg_srm_pop_temp[-10:]))
+print("Baseline last 10 years: ", np.mean(avg_base_area_temp[-10:]), np.mean(avg_base_pop_temp[-10:]))
+
+for iyear in range(110):
+    print(iyear+1990, avg_base_area_temp[iyear], avg_base_pop_temp[iyear])
+
+
+print("Difference in emissions: ", avg_srm_sum_actual_emissions - avg_base_sum_actual_emissions)
+print("Difference in emissions (%): ", 100*(avg_srm_sum_actual_emissions - avg_base_sum_actual_emissions)/avg_base_sum_actual_emissions)
+print("Total difference: ", np.sum(avg_srm_sum_actual_emissions[40:] - avg_base_sum_actual_emissions[40:]), 100*np.sum(avg_srm_sum_actual_emissions[40:] - avg_base_sum_actual_emissions[40:])/np.sum(avg_base_sum_actual_emissions))
+
+ax3[1].set_xlabel("Year", fontsize=20)
+ax3[0].set_ylabel("Emissions (GtC)", fontsize=20)
+ax3[1].set_ylabel("Temperature change (\N{DEGREE SIGN}C)", fontsize=20)
+ax3[0].xaxis.set_tick_params(labelsize=16)
+ax3[0].yaxis.set_tick_params(labelsize=16)
+ax3[1].xaxis.set_tick_params(labelsize=16)
+ax3[1].yaxis.set_tick_params(labelsize=16)
+ax3[0].legend(fontsize=20)
+ax3[1].legend(fontsize=20)
+
+fig3.text(0.01, 0.98, "(a)", fontsize=16, wrap=True)
+fig3.text(0.01, 0.49, "(b)", fontsize=16, wrap=True)
+
+fig3.subplots_adjust(left=0.1, right=0.98, top=0.96, bottom=0.05, hspace=0.1)
+
+fig3.savefig("figures/emissions_and_temperature_compare.pdf")
+
+
+# --------------------------------------------------------------------------------------
+
+# SPECIFY COLOUR MAPS
+
+ncolors = 11
+colors = sns.color_palette("YlOrRd", ncolors).as_hex()
+vmin = -3
+vmax = 30
+color_bins = np.linspace(vmin, vmax, ncolors + 1)
+
+
+gdp_cmap = ListedColormap(colors)
+
+# https://matplotlib.org/stable/gallery/color/custom_cmap.html
+cdict3 = {
+    "red": (
+        (0.0, 0.0, 0.0),
+        (0.25, 0.0, 0.0),
+        (0.5, 0.8, 1.0),
+        (0.75, 1.0, 1.0),
+        (1.0, 0.4, 1.0),
+    ),
+    "green": (
+        (0.0, 0.0, 0.0),
+        (0.25, 0.0, 0.0),
+        (0.5, 0.9, 0.9),
+        (0.75, 0.0, 0.0),
+        (1.0, 0.0, 0.0),
+    ),
+    "blue": (
+        (0.0, 0.0, 0.4),
+        (0.25, 1.0, 1.0),
+        (0.5, 1.0, 0.8),
+        (0.75, 0.0, 0.0),
+        (1.0, 0.0, 0.0),
+    ),
+}
+
+
+cmap = LinearSegmentedColormap("BlueRed3", cdict3)
+cmap_red = cmr.get_sub_cmap(cmap, 0.5, 1)
+cmap_blue = cmr.get_sub_cmap(cmap, 0.33, 0.5)
+
+colors1 = cmap_blue(np.linspace(0., 1, 128))
+colors2 = cmap_red(np.linspace(0, 1, 128))
+
+# combine them and build a new colormap
+colors = np.vstack((colors1, colors2))
+population_cmap = LinearSegmentedColormap.from_list('my_colormap', colors)
+
+vmin2 = -100
+vmax2 = 300
+divnorm = TwoSlopeNorm(vmin=vmin2, vcenter=0, vmax=vmax2)
+
+# --------------------------------------------------------------------------------------
+
+# PLOT CHANGE OF LAST DECADE
+
+ndecades = nyears // 10
+
+print("Decade:", 1990 + (ndecades - 1) * 10, "-", 2000 + (ndecades - 1) * 10)
+print(ndecades, 10 * (ndecades - 1), 10 * ndecades)
+
+
+expected_gdpper_start = np.average(srm_fp_gdpper_country[:10, :], axis=0)
+expected_gdpper_2020s = np.average(srm_fp_gdpper_country[30:40, :], axis=0)
+
+expected_srm_gdpper_country_decade = (
+    100
+    * (
+        np.average(
+            srm_fp_gdpper_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
+        )
+        - expected_gdpper_2020s
+    )
+    / expected_gdpper_2020s
+)
+
+srm_dgdpper_country_decade = (
+    100
+    * (
+        np.average(
+            srm_gdpper_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
+        )
+        - expected_gdpper_2020s
+    )
+    / expected_gdpper_2020s
+)
+base_dgdpper_country_decade = (
+    100
+    * (
+        np.average(
+            base_gdpper_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
+        )
+        - expected_gdpper_2020s
+    )
+    / expected_gdpper_2020s
+)
+
+
+fp_dtemp_country_decade = np.average(
+    srm_fp_dtemp_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
+)
+srm_dtemp_country_decade = np.average(
+    srm_dtemp_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
+) - np.average(
+    srm_dtemp_country[30:40, :], axis=0
+)
+base_dtemp_country_decade = np.average(
+    base_dtemp_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
+) - np.average(
+    base_dtemp_country[30:40, :], axis=0
+)
+
+dpopulation_country_decade = (
+    100
+    * (
+        np.average(population_countries[10 * (ndecades - 1) : 10 * ndecades, :], axis=0)
+        - np.average(population_countries[30:40, :], axis=0)
+    )
+    / np.average(population_countries[30:40, :], axis=0)
+)
+print(np.max(dpopulation_country_decade), np.min(dpopulation_country_decade))
+
+# --------------------------------------------------------------------------------------
+
+fig5, ax5 = plt.subplots(nrows=3, ncols=1, figsize=(7.5, 15))
+
+pscat1 = ax5[0].scatter(
+    base_dtemp_country_decade,
+    base_dgdpper_country_decade,
+    cmap=population_cmap,
+    norm=divnorm,
+    linewidth=0.2,
+    alpha=0.8,
+    label=None,
+    c=dpopulation_country_decade,
+    s=np.sqrt(population_countries[30, :] * 1e3 / 1e3),
+)
+
+pscat1 = ax5[1].scatter(
+    srm_dtemp_country_decade,
+    srm_dgdpper_country_decade,
+    cmap=population_cmap,
+    norm=divnorm,
+    linewidth=0.2,
+    alpha=0.8,
+    label=None,
+    c=dpopulation_country_decade,
+    s=np.sqrt(population_countries[30, :] * 1e3 / 1e3),
+)
+
+pscat1 = ax5[2].scatter(
+    srm_dtemp_country_decade - base_dtemp_country_decade,
+    srm_dgdpper_country_decade - base_dgdpper_country_decade,
+    cmap=population_cmap,
+    norm=divnorm,
+    linewidth=0.2,
+    alpha=0.8,
+    label=None,
+    c=dpopulation_country_decade,
+    s=np.sqrt(population_countries[30, :] * 1e3 / 1e3),
+)
+
+# Add country names:
+for c, country in enumerate(all_countries):
+    if country in text_countires:
+
+        x = base_dtemp_country_decade[c]
+        y = base_dgdpper_country_decade[c]
+        tx = x
+        ty = y
+        alignment='left'
+
+        if country == "United States" or country == "Somalia" or country == "Mali" or country == "Spain":
+            alignment='right'
+        elif country == "China" or country == "India":
+            alignment = "center"
+
+        print(country, alignment)
+
+
+        add_country_names(ax=ax5[0],
+                          x=x,
+                          y=y,
+                          tx=tx,
+                          ty=ty,
+                          country_name=country,
+                          cmap=population_cmap,
+                          color=dpopulation_country_decade[c],
+                          size=np.sqrt(population_countries[30, c] * 1e3 / 1e3),
+                          horizontalalignment=alignment,
+                          norm=divnorm)
+
+
+        x = srm_dtemp_country_decade[c]
+        y = srm_dgdpper_country_decade[c]
+        tx = x
+        ty = y
+        alignment='left'
+
+        if country == "Canada":
+            alignment='right'
+        elif country=="United Kingdom":
+            alignment = "center"
+            ty = y - 2.5
+            tx = x -0.1
+        elif country == "United States":
+            ty = y + 2
+        elif country == "Somalia":
+            ty = y - 3
+        elif country == "Russia":
+            ty = y - 1
+            alignment = "center"
+        elif country == "Saudi Arabia":
+            ty = y - 1.5
+        elif country == "China":
+            alignment = "center"
+        elif country == "India" or country == "Niger":
+            ty = y +1
+
+        add_country_names(ax=ax5[1],
+                        x=x,
+                        y=y,
+                        tx = tx,
+                        ty = ty,
+                        country_name=country,
+                        cmap=population_cmap,
+                        color=dpopulation_country_decade[c],
+                        size=np.sqrt(population_countries[30, c] * 1e3 / 1e3),
+                        horizontalalignment=alignment,
+                        norm=divnorm)
+
+        x = srm_dtemp_country_decade[c] - base_dtemp_country_decade[c]
+        y = srm_dgdpper_country_decade[c] - base_dgdpper_country_decade[c]
+        tx = x
+        ty = y
+        alignment='left'
+
+        if country == "United States" or country == "Russia" or country == "Namibia":
+            alignment='right'
+        elif country == "China" or country == "India":
+            alignment = "center"
+
+        add_country_names(ax=ax5[2],
+                        x=x,
+                        y=y,
+                        tx = tx,
+                        ty = ty,
+                        country_name=country,
+                        cmap=population_cmap,
+                        color=dpopulation_country_decade[c],
+                        size=np.sqrt(population_countries[30, c] * 1e3 / 1e3),
+                        horizontalalignment=alignment,
+                        norm=divnorm)
+
+
+# Calculate global values:
+base_dtemp_global_decade = np.average(avg_base_pop_temp[10 * (ndecades - 1) : 10 * ndecades]) - np.average(avg_base_pop_temp[30:40])
+base_dgdpper_global_decade  = 100 *(np.average(base_global_gdpper[10 * (ndecades - 1) : 10 * ndecades]) - np.average(srm_fp_sum_gdpper_detrended[30:40]))/ np.average(srm_fp_sum_gdpper_detrended[30:40])
+srm_dtemp_global_decade = np.average(avg_srm_pop_temp[10 * (ndecades - 1) : 10 * ndecades]) - np.average(avg_base_pop_temp[30:40])
+srm_dgdpper_global_decade =  100 *(np.average(srm_global_gdpper[10 * (ndecades - 1) : 10 * ndecades]) - np.average(srm_fp_sum_gdpper_detrended[30:40]))/ np.average(srm_fp_sum_gdpper_detrended[30:40])
+dpopulation_global_decade = 100* (np.average(global_population[10 * (ndecades - 1) : 10 * ndecades])- np.average(global_population[30:40]))/ np.average(global_population[30:40])
+
+# Add global value:
+add_global_value(
+    ax=ax5[0],
+    x=base_dtemp_global_decade,
+    y=base_dgdpper_global_decade,
+    color=dpopulation_global_decade,
+    size=50,
+    cmap=population_cmap,
+    norm=divnorm,
+    text=True,
+)
+add_global_value(
+    ax=ax5[1],
+    x=srm_dtemp_global_decade,
+    y=srm_dgdpper_global_decade,
+    color=dpopulation_global_decade,
+    size=50,
+    cmap=population_cmap,
+    norm=divnorm,
+    text=True,
+)
+
+add_global_value(
+    ax=ax5[2],
+    x=srm_dtemp_global_decade - base_dtemp_global_decade,
+    y=srm_dgdpper_global_decade - base_dgdpper_global_decade,
+    color=dpopulation_global_decade,
+    size=50,
+    cmap=population_cmap,
+    norm=divnorm,
+    text=True,
+)
+
+
+# Generate legend to indicate population size:
+add_bubble_label(
+    fig=fig5,
+    position=[0.83, 0.577, 0.02, 0.4],
+    labels=["10$^5$", "10$^{6}$", "10$^{7}$", "10$^{8}$", "10$^{9}$"],
+    label_values=[
+        np.sqrt(1e5 / 1e3),
+        np.sqrt(1e6 / 1e3),
+        np.sqrt(1e7 / 1e3),
+        np.sqrt(1e8 / 1e3),
+        np.sqrt(1e9 / 1e3),
+    ],
+    title="Year 2020\npopulation",
+)
+
+"""
+# Generate legend to indicate GDP size:
+add_bubble_label(
+    fig=fig5,
+    position=[0.83, 0.243, 0.02, 0.4],
+    labels=["100$", "1000$", "10 000$", "100 000$"],
+    label_values=[np.sqrt(1e2), np.sqrt(1e3), np.sqrt(1e4), np.sqrt(1e5)],
+    title="Initial\nGDP/capita",
+)
+"""
+
+# Generate color bar to indicate population change:
+cbar_ax = fig5.add_axes([0.86, 0.699, 0.02, 0.14])
+cbar = fig5.colorbar(pscat1, cax=cbar_ax)
+cbar.set_label(
+    "Population change (%)",
+    fontsize=12,
+    rotation=270,
+    labelpad=18,
+)
+
+cbar.set_ticks([-100,0,100,200,300])
+cbar.ax.tick_params(labelsize=10)
+
+
+"""
+# Generate color bar to indicate 2000 temperature:
+cbar_ax = fig5.add_axes([0.86, 0.369, 0.02, 0.14])
+cbar = fig5.colorbar(pscat2, ticks=color_bins[1:-1], cax=cbar_ax)
+cbar.set_label(
+    "Initial temperature (\N{DEGREE SIGN}C)",
+    fontsize=12,
+    rotation=270,
+    labelpad=18,
+)
+cbar.ax.tick_params(labelsize=10)
+"""
+for ax in ax5:
+    ax.xaxis.set_tick_params(labelsize=12)
+    ax.yaxis.set_tick_params(labelsize=12)
+
+    # Add the 0-line:
+    ax.axhline(0, color="grey", alpha=0.6, linestyle="--", linewidth=1)
+
+
+ax5[0].set_xlim(-2.5, 3.3)
+ax5[1].set_xlim(-2.5, 3.3)
+ax5[2].set_xlim(-4.2, 1)
+ax5[0].set_ylim(-43, 40)
+ax5[1].set_ylim(-43, 40)
+ax5[2].set_ylim(-42, 52)
+
+ax5[0].set_xlabel(r"$\Delta$temperature " + "(\N{DEGREE SIGN}C)", fontsize=14)
+ax5[1].set_xlabel(r"$\Delta$temperature " + "(\N{DEGREE SIGN}C)", fontsize=14)
+ax5[2].set_xlabel(
+    r"Difference in $\Delta$temperature " + "(\N{DEGREE SIGN}C)", fontsize=14
+)
+ax5[0].set_ylabel(r"$\Delta$GDP/capita (%)", fontsize=14)
+ax5[1].set_ylabel(r"$\Delta$GDP/capita (%)", fontsize=14)
+ax5[2].set_ylabel(r"Difference in $\Delta$GDP/capita (%)", fontsize=14)
+
+ax5[0].set_title("Without SRM", fontsize=14)
+ax5[1].set_title("With SRM", fontsize=14)
+ax5[2].set_title("With SRM - without SRM", fontsize=14)
+
+fig5.text(0.01, 0.98, "(a)", fontsize=12, wrap=True)
+fig5.text(0.01, 0.65, "(b)", fontsize=12, wrap=True)
+fig5.text(0.01, 0.33, "(c)", fontsize=12, wrap=True)
+
+fig5.subplots_adjust(left=0.11, right=0.83, top=0.97, bottom=0.04, hspace=0.22)
+
+fig5.savefig("figures/country_difference_gdpper_percent_SRM_2090s-2020s.pdf")
+fig5.savefig("figures/country_difference_gdpper_percent_SRM_2090s-2020s.png")
+
+plt.close()
 
 # --------------------------------------------------------------------------------------
 
@@ -548,33 +1162,13 @@ start_temp_countries = np.average(srm_fp_temp_countries[:10, :], axis=0)
 colors = sns.color_palette("RdYlBu", 5).as_hex()
 colors[2] = "#A9A9A9"
 
-total_gdp = np.sum(srm_e1_gdp_country, axis=1)
-initial_gdp_share = 100 * srm_e1_gdp_country[0, :] / total_gdp[0]
-final_gdp_share = 100 * srm_e1_gdp_country[-1, :] / total_gdp[-1]
-
+total_gdp = np.sum(srm_gdp_country, axis=1)
+initial_gdp_share = 100 * srm_gdp_country[0, :] / total_gdp[0]
 
 df = pd.DataFrame(initial_gdp_share, columns=["initial_gdp_share"], index=all_countries)
 
-print(srm_e1_gdpper_country[0, :])
-print(base_e1_gdpper_country[0, :])
-print(srm_fp_gdpper_country[0, :])
-
-print(np.max(srm_e1_gdpper_country[0, :]))
-
-df["final_gdp_share"] = final_gdp_share
-df["gdp_per_capita_1990"] = srm_e1_gdpper_country[0, :]
-df["gdp_diff"] = (
-    100
-    * np.average(srm_e1_gdp_country[-10:, :] - base_e1_gdp_country[-10:, :], axis=0)
-    / np.average(base_e1_gdp_country[-10:, :], axis=0)
-)
-df["gdpper_diff"] = (
-    100
-    * np.average(
-        srm_e1_gdpper_country[-10:, :] - base_e1_gdpper_country[-10:, :], axis=0
-    )
-    / np.average(base_e1_gdpper_country[-10:, :], axis=0)
-)
+df["gdp_per_capita_1990"] = srm_gdpper_country[0, :]
+df["gdpper_diff"] = (srm_dgdpper_country_decade - base_dgdpper_country_decade)
 print(df)
 df["initial_population"] = population_countries[0, :]
 print(population_countries[0, :])
@@ -621,18 +1215,21 @@ for c, country in enumerate(df.index):
         alignment = 'right'
 
         if country in ["Norway", "Russia", "Canada", "Germany"]:
-            y -= 3.5
+            y -= 2.5
             x = bins[c]
             alignment = 'left'
             if country == "Norway":
-                y -=3
+                y -=2
                 # Add line:
-                ax1.vlines(bins[c] + 0.5*(bins[c+1] - bins[c]), y+3, df["gdpper_diff"][country]-0.7, linewidth=0.5, color=color)
+                ax1.vlines(bins[c] + 0.5*(bins[c+1] - bins[c]), y+2, df["gdpper_diff"][country]-0.7, linewidth=0.5, color=color)
         elif country == "United States":
             x = bins[c] + 0.5*(bins[c+1] - bins[c])
             alignment = 'center'
         elif country == "Namibia":
             y +=1
+        elif country == "Iraq":
+            y += 2
+            #ax1.vlines(bins[c] + 0.5*(bins[c+1] - bins[c]), df["gdpper_diff"][country]+0.7,y-2, linewidth=0.5, color=color)
 
         ax1.text(
             x,
@@ -641,9 +1238,8 @@ for c, country in enumerate(df.index):
             fontsize=10,color=color)
 
 
-
 plt.xlim([-0.1, 100.1])
-# plt.ylim([-2.2,2.2])
+plt.ylim([-35,55])
 
 plt.xticks(size=16)
 plt.yticks(size=16)
@@ -665,502 +1261,6 @@ plt.savefig(
     "figures/histogram_GDPper_difference_GDP_share.pdf",
     dpi=300,
     bbox_inches="tight",
-    pad=0.1,
-    alpha=0.4,
 )
-
 
 # --------------------------------------------------------------------------------------
-
-# PLOT EMISSIONS AND AVERAGE TEMPERATURE AGAINST TIME
-
-fig3, ax3 = plt.subplots(nrows=2, ncols=1, figsize=(10, 12))
-
-years = np.arange(1990, 2101)
-
-for isim, sim in enumerate(simulations[2:]):
-    exec("sim_years = " + sim + "_wealth.shape[0]")
-    if "base" in sim:
-        color = "blue"
-        start_year = 0
-    else:
-        color = "red"
-        start_year = 39
-
-    exec("sum_actual_emissions = " + sim + "_sum_actual_emissions")
-    exec("pop_temp = " + sim + "_pop_temp")
-    exec("area_temp = " + sim + "_area_temp")
-
-    ax3[0].plot(
-        years[start_year:sim_years],
-        sum_actual_emissions[start_year:] / 1e3,
-        linewidth=1,
-        alpha=0.5,
-        color=color,
-    )
-
-    ax3[1].plot(
-        years[start_year:sim_years],
-        pop_temp[start_year:],
-        linewidth=1,
-        alpha=0.5,
-        color=color,
-    )
-
-    ax3[1].plot(
-        years[start_year:sim_years],
-        area_temp[start_year:],
-        linewidth=1,
-        alpha=0.5,
-        color="grey",
-    )
-
-avg_srm_pop_temp = np.average(
-    np.stack((srm_e1_pop_temp, srm_e2_pop_temp, srm_e3_pop_temp)), axis=0
-)
-avg_srm_area_temp = np.average(
-    np.stack((srm_e1_area_temp, srm_e2_area_temp, srm_e3_area_temp)), axis=0
-)
-avg_srm_sum_actual_emissions = np.average(
-    np.stack(
-        (
-            srm_e1_sum_actual_emissions,
-            srm_e2_sum_actual_emissions,
-            srm_e3_sum_actual_emissions,
-        )
-    ),
-    axis=0,
-)
-
-avg_base_sum_actual_emissions = np.average(
-    np.stack(
-        (
-            base_e1_sum_actual_emissions,
-            base_e2_sum_actual_emissions,
-            base_e3_sum_actual_emissions,
-        )
-    ),
-    axis=0,
-)
-
-avg_base_pop_temp = np.average(
-    np.stack((base_e1_pop_temp, base_e2_pop_temp, base_e3_pop_temp)), axis=0
-)
-avg_base_area_temp = np.average(
-    np.stack((base_e1_area_temp, base_e2_area_temp, base_e3_area_temp)), axis=0
-)
-
-ax3[0].plot(
-    years[:sim_years],
-    avg_base_sum_actual_emissions / 1e3,
-    linewidth=3,
-    color="blue",
-    label="Without SRM",
-)
-ax3[1].plot(
-    years[:sim_years],
-    avg_base_pop_temp,
-    linewidth=3,
-    color="blue",
-    label="Without SRM",
-)
-ax3[1].plot(
-    years[:sim_years],
-    avg_base_area_temp,
-    linewidth=3,
-    color="grey",
-    label="Area weighted",
-)
-
-ax3[0].plot(
-    years[39:sim_years],
-    avg_srm_sum_actual_emissions[39:] / 1e3,
-    linewidth=3,
-    color="red",
-    label="With SRM",
-)
-ax3[1].plot(
-    years[39:sim_years],
-    avg_srm_pop_temp[39:],
-    linewidth=3,
-    color="red",
-    label="With SRM",
-)
-ax3[1].plot(
-    years[39:sim_years],
-    avg_srm_area_temp[39:],
-    linewidth=3,
-    color="grey",
-)
-
-print("Difference in emissions: ", avg_srm_sum_actual_emissions - avg_base_sum_actual_emissions)
-print("Difference in emissions (%): ", 100*(avg_srm_sum_actual_emissions - avg_base_sum_actual_emissions)/avg_base_sum_actual_emissions)
-print("Total difference: ", np.sum(avg_srm_sum_actual_emissions[40:] - avg_base_sum_actual_emissions[40:]), 100*np.sum(avg_srm_sum_actual_emissions[40:] - avg_base_sum_actual_emissions[40:])/np.sum(avg_base_sum_actual_emissions))
-
-ax3[1].set_xlabel("Year", fontsize=20)
-ax3[0].set_ylabel("Emissions (GtC)", fontsize=20)
-ax3[1].set_ylabel("Temperature change (\N{DEGREE SIGN}C)", fontsize=20)
-ax3[0].xaxis.set_tick_params(labelsize=16)
-ax3[0].yaxis.set_tick_params(labelsize=16)
-ax3[1].xaxis.set_tick_params(labelsize=16)
-ax3[1].yaxis.set_tick_params(labelsize=16)
-ax3[0].legend(fontsize=20)
-
-fig3.text(0.01, 0.98, "(a)", fontsize=16, wrap=True)
-fig3.text(0.01, 0.49, "(b)", fontsize=16, wrap=True)
-
-fig3.subplots_adjust(left=0.1, right=0.98, top=0.96, bottom=0.05, hspace=0.1)
-
-fig3.savefig("figures/emissions_and_population_weighted_temperature_compare.pdf")
-
-
-# --------------------------------------------------------------------------------------
-
-# SPECIFY COLOUR MAPS
-
-ncolors = 11
-colors = sns.color_palette("YlOrRd", ncolors).as_hex()
-vmin = -3
-vmax = 30
-color_bins = np.linspace(vmin, vmax, ncolors + 1)
-
-
-gdp_cmap = ListedColormap(colors)
-
-# https://matplotlib.org/stable/gallery/color/custom_cmap.html
-cdict3 = {
-    "red": (
-        (0.0, 0.0, 0.0),
-        (0.25, 0.0, 0.0),
-        (0.5, 0.8, 1.0),
-        (0.75, 1.0, 1.0),
-        (1.0, 0.4, 1.0),
-    ),
-    "green": (
-        (0.0, 0.0, 0.0),
-        (0.25, 0.0, 0.0),
-        (0.5, 0.9, 0.9),
-        (0.75, 0.0, 0.0),
-        (1.0, 0.0, 0.0),
-    ),
-    "blue": (
-        (0.0, 0.0, 0.4),
-        (0.25, 1.0, 1.0),
-        (0.5, 1.0, 0.8),
-        (0.75, 0.0, 0.0),
-        (1.0, 0.0, 0.0),
-    ),
-}
-
-
-cmap = LinearSegmentedColormap("BlueRed3", cdict3)
-cmap_red = cmr.get_sub_cmap(cmap, 0.5, 1)
-cmap_blue = cmr.get_sub_cmap(cmap, 0.45, 0.5)
-
-colors1 = cmap_blue(np.linspace(0., 1, 128))
-colors2 = cmap_red(np.linspace(0, 1, 128))
-
-# combine them and build a new colormap
-colors = np.vstack((colors1, colors2))
-population_cmap = LinearSegmentedColormap.from_list('my_colormap', colors)
-
-vmin2 = -100
-vmax2 = 1000
-divnorm = TwoSlopeNorm(vmin=vmin2, vcenter=0, vmax=vmax2)
-
-# --------------------------------------------------------------------------------------
-
-# PLOT CHANGE OF LAST DECADE
-
-ndecades = nyears // 10
-
-print("Decade:", 1990 + (ndecades - 1) * 10, "-", 2000 + (ndecades - 1) * 10)
-print(ndecades, 10 * (ndecades - 1), 10 * ndecades)
-
-
-expected_gdpper_start = np.average(srm_fp_gdpper_country[:10, :], axis=0)
-gdpper_start = np.average(srm_e1_gdpper_country[:10, :], axis=0)
-expected_dgdpper_countries = (
-    100
-    * (
-        np.average(
-            srm_fp_gdpper_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
-        )
-        - expected_gdpper_start
-    )
-    / expected_gdpper_start
-)
-dgdpper_countries = (
-    100
-    * (
-        np.average(
-            srm_e1_gdpper_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
-        )
-        - expected_gdpper_start
-    )
-    / expected_gdpper_start
-)
-base_e1_dgdpper_countries = (
-    100
-    * (
-        np.average(
-            base_e1_gdpper_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
-        )
-        - expected_gdpper_start
-    )
-    / expected_gdpper_start
-)
-
-print(expected_dgdpper_countries)
-print(dgdpper_countries)
-print(base_e1_dgdpper_countries)
-
-fp_dtemp_countries_decade = np.average(
-    srm_fp_dtemp_countries[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
-)
-dtemp_countries_decade = np.average(
-    srm_e1_dtemp_countries[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
-)
-base_e1_dtemp_countries_decade = np.average(
-    base_e1_dtemp_countries[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
-)
-
-dpopulation_country_decade = (
-    100
-    * (
-        np.average(population_countries[10 * (ndecades - 1) : 10 * ndecades, :], axis=0)
-        - np.average(population_countries[0:10, :], axis=0)
-    )
-    / np.average(population_countries[0:10, :], axis=0)
-)
-
-diff_gdpper = dgdpper_countries - expected_dgdpper_countries
-ind = np.argsort(diff_gdpper)
-# for i in range(len(all_countries)):
-#    print(all_countries[ind[i]], diff_gdpper[ind[i]])
-
-
-
-
-edgecolors = []
-zorders = []
-for c, country in enumerate(all_countries):
-    if country in text_countires:
-        edgecolors.append("black")
-        zorders.append(2)
-    else:
-        edgecolors.append("none")
-        zorders.append(1)
-
-
-# --------------------------------------------------------------------------------------
-
-fig5, ax5 = plt.subplots(nrows=3, ncols=1, figsize=(7.5, 15))
-
-pscat1 = ax5[0].scatter(
-    base_e1_dtemp_countries_decade,
-    base_e1_dgdpper_countries,
-    cmap=population_cmap,
-    norm=divnorm,
-    edgecolors=edgecolors,
-    linewidth=0.2,
-    alpha=0.8,
-    label=None,
-    c=dpopulation_country_decade,
-    s=np.sqrt(population_countries[0, :] * 1e3 / 1e3),
-)
-
-pscat1 = ax5[1].scatter(
-    dtemp_countries_decade,
-    dgdpper_countries,
-    cmap=population_cmap,
-    norm=divnorm,
-    edgecolors=edgecolors,
-    linewidth=0.2,
-    alpha=0.8,
-    label=None,
-    c=dpopulation_country_decade,
-    s=np.sqrt(population_countries[0, :] * 1e3 / 1e3),
-)
-
-pscat1 = ax5[2].scatter(
-    dtemp_countries_decade - base_e1_dtemp_countries_decade,
-    dgdpper_countries - base_e1_dgdpper_countries,
-    cmap=population_cmap,
-    norm=divnorm,
-    edgecolors=edgecolors,
-    linewidth=0.2,
-    alpha=0.8,
-    label=None,
-    c=dpopulation_country_decade,
-    s=np.sqrt(population_countries[0, :] * 1e3 / 1e3),
-)
-
-# Add country names:
-for c, country in enumerate(all_countries):
-    if country in text_countires:
-        ax5[0].text(
-            base_e1_dtemp_countries_decade[c],
-            base_e1_dgdpper_countries[c],
-            country,
-            fontsize=10,
-            zorder=2,
-        )
-        ax5[1].text(
-            dtemp_countries_decade[c],
-            dgdpper_countries[c],
-            country,
-            fontsize=10,
-            zorder=2,
-        )
-        ax5[2].text(
-            dtemp_countries_decade[c] - base_e1_dtemp_countries_decade[c],
-            dgdpper_countries[c] - base_e1_dgdpper_countries[c],
-            country,
-            fontsize=10,
-            zorder=2,
-        )
-
-# Add global value:
-add_global_value(
-    ax=ax5[0],
-    x=np.average(base_e1_pop_temp[10 * (ndecades - 1) : 10 * ndecades]),
-    y=np.average(base_e1_global_gdpper_change[10 * (ndecades - 1) : 10 * ndecades]),
-    color=100
-    * (
-        np.average(global_population[10 * (ndecades - 1) : 10 * ndecades])
-        - np.average(global_population[:10])
-    )
-    / np.average(global_population[:10]),
-    size=50,
-    cmap=population_cmap,
-    norm=divnorm,
-    text=True,
-)
-add_global_value(
-    ax=ax5[1],
-    x=np.average(srm_e2_pop_temp[10 * (ndecades - 1) : 10 * ndecades]),
-    y=np.average(srm_e2_global_gdpper_change[10 * (ndecades - 1) : 10 * ndecades]),
-    color=100
-    * (
-        np.average(global_population[10 * (ndecades - 1) : 10 * ndecades])
-        - np.average(global_population[:10])
-    )
-    / np.average(global_population[:10]),
-    size=50,
-    cmap=population_cmap,
-    norm=divnorm,
-    text=True,
-)
-
-add_global_value(
-    ax=ax5[2],
-    x=np.average(srm_e2_pop_temp[10 * (ndecades - 1) : 10 * ndecades])
-    - np.average(base_e1_pop_temp[10 * (ndecades - 1) : 10 * ndecades]),
-    y=np.average(srm_e2_global_gdpper_change[10 * (ndecades - 1) : 10 * ndecades])
-    - np.average(base_e1_global_gdpper_change[10 * (ndecades - 1) : 10 * ndecades]),
-    color=100
-    * (
-        np.average(global_population[10 * (ndecades - 1) : 10 * ndecades])
-        - np.average(global_population[:10])
-    )
-    / np.average(global_population[:10]),
-    size=50,
-    cmap=population_cmap,
-    norm=divnorm,
-    text=True,
-)
-
-
-# Generate legend to indicate population size:
-add_bubble_label(
-    fig=fig5,
-    position=[0.83, 0.577, 0.02, 0.4],
-    labels=["10$^5$", "10$^{6}$", "10$^{7}$", "10$^{8}$", "10$^{9}$"],
-    label_values=[
-        np.sqrt(1e5 / 1e3),
-        np.sqrt(1e6 / 1e3),
-        np.sqrt(1e7 / 1e3),
-        np.sqrt(1e8 / 1e3),
-        np.sqrt(1e9 / 1e3),
-    ],
-    title="Initial\npopulation",
-)
-
-"""
-# Generate legend to indicate GDP size:
-add_bubble_label(
-    fig=fig5,
-    position=[0.83, 0.243, 0.02, 0.4],
-    labels=["100$", "1000$", "10 000$", "100 000$"],
-    label_values=[np.sqrt(1e2), np.sqrt(1e3), np.sqrt(1e4), np.sqrt(1e5)],
-    title="Initial\nGDP/capita",
-)
-"""
-minval = np.min(dpopulation_country_decade)
-
-# Generate color bar to indicate population change:
-cbar_ax = fig5.add_axes([0.86, 0.699, 0.02, 0.14])
-cbar = fig5.colorbar(pscat1, cax=cbar_ax)
-cbar.set_label(
-    "Population change (%)",
-    fontsize=12,
-    rotation=270,
-    labelpad=18,
-)
-
-cbar.set_ticks([-100,0,200,400,600,800,1000])
-cbar.ax.tick_params(labelsize=10)
-
-
-"""
-# Generate color bar to indicate 2000 temperature:
-cbar_ax = fig5.add_axes([0.86, 0.369, 0.02, 0.14])
-cbar = fig5.colorbar(pscat2, ticks=color_bins[1:-1], cax=cbar_ax)
-cbar.set_label(
-    "Initial temperature (\N{DEGREE SIGN}C)",
-    fontsize=12,
-    rotation=270,
-    labelpad=18,
-)
-cbar.ax.tick_params(labelsize=10)
-"""
-for ax in ax5:
-    ax.xaxis.set_tick_params(labelsize=12)
-    ax.yaxis.set_tick_params(labelsize=12)
-
-    # Add the 0-line:
-    ax.axhline(0, color="grey", alpha=0.6, linestyle="--", linewidth=1)
-
-
-ax5[0].set_xlim(0, 7)
-ax5[1].set_xlim(0, 7)
-ax5[2].set_xlim(-5, 0)
-ax5[0].set_ylim(-60, 50)
-ax5[1].set_ylim(-60, 50)
-# ax5[2].set_xlim(-0.6, 0.8)
-# ax5[2].set_ylim(-3, 5)
-
-ax5[0].set_xlabel(r"$\Delta$temperature " + "(\N{DEGREE SIGN}C)", fontsize=14)
-ax5[1].set_xlabel(r"$\Delta$temperature " + "(\N{DEGREE SIGN}C)", fontsize=14)
-ax5[2].set_xlabel(
-    r"Difference in $\Delta$temperature " + "(\N{DEGREE SIGN}C)", fontsize=14
-)
-ax5[0].set_ylabel(r"$\Delta$GDP/capita (%)", fontsize=14)
-ax5[1].set_ylabel(r"$\Delta$GDP/capita (%)", fontsize=14)
-ax5[2].set_ylabel(r"Difference in $\Delta$GDP/capita (%)", fontsize=14)
-
-ax5[0].set_title("Without SRM", fontsize=14)
-ax5[1].set_title("With SRM", fontsize=14)
-ax5[2].set_title("With SRM - without SRM", fontsize=14)
-
-fig5.text(0.01, 0.98, "(a)", fontsize=12, wrap=True)
-fig5.text(0.01, 0.65, "(b)", fontsize=12, wrap=True)
-fig5.text(0.01, 0.33, "(c)", fontsize=12, wrap=True)
-
-fig5.subplots_adjust(left=0.11, right=0.83, top=0.97, bottom=0.04, hspace=0.22)
-
-fig5.savefig("figures/country_difference_gdpper_percent_SRM_2090_2099.pdf")
-fig5.savefig("figures/country_difference_gdpper_percent_SRM_2090_2099.png")
-
-plt.close()
