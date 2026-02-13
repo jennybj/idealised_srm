@@ -1,0 +1,1 @@
+../../coupling_noresm2_diam/scripts/module_coupling.py
