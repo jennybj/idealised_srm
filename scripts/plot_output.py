@@ -19,9 +19,9 @@ from matplotlib.colors import (
     TwoSlopeNorm,
 )
 
-sys.path.insert(
-    0, "/home/jennybj/Documents/coupling_noresm2_diam/scripts/"
-)  # CHANGE path to location on module
+# sys.path.insert(
+#    0, "/home/jennybj/Documents/coupling_noresm2_diam/scripts/"
+# )  # CHANGE path to location on module
 from module_coupling import *
 
 # --------------------------------------------------------------------------------------
@@ -112,11 +112,11 @@ for isim in range(len(names)):
 
 
 # Read in Henri's data:
-srm_ai = np.loadtxt("standalone_output/ai.txt")[:, 1 : nyears + 1].T
-srm_fp_gdp = np.loadtxt("standalone_output/reg_gdp.txt")[:, 1 : nyears + 1].T
-srm_fp_capital = np.loadtxt("standalone_output/capital.txt")[:, 1 : nyears + 1].T
+srm_ai = np.loadtxt("../standalone_output/ai.txt")[:, 1 : nyears + 1].T
+srm_fp_gdp = np.loadtxt("../standalone_output/reg_gdp.txt")[:, 1 : nyears + 1].T
+srm_fp_capital = np.loadtxt("../standalone_output/capital.txt")[:, 1 : nyears + 1].T
 # srm_fp_emissions = np.loadtxt("standalone_output/regional_emissions.txt")[:, 1 : nyears + 1].T
-srm_fp_regtemp = np.loadtxt("standalone_output/regional_temperature.txt")[
+srm_fp_regtemp = np.loadtxt("../standalone_output/regional_temperature.txt")[
     :, 1 : nyears + 1
 ].T
 
@@ -851,7 +851,7 @@ fig3.text(0.01, 0.49, "(b)", fontsize=16, wrap=True)
 
 fig3.subplots_adjust(left=0.1, right=0.98, top=0.96, bottom=0.05, hspace=0.1)
 
-fig3.savefig("figures/emissions_and_temperature_compare.pdf")
+fig3.savefig("../figures/emissions_and_temperature_compare.pdf")
 
 
 # --------------------------------------------------------------------------------------
@@ -1263,8 +1263,8 @@ fig5.text(0.01, 0.33, "(c)", fontsize=12, wrap=True)
 
 fig5.subplots_adjust(left=0.11, right=0.83, top=0.97, bottom=0.04, hspace=0.22)
 
-fig5.savefig("figures/country_difference_gdpper_percent_SRM_2090s-2020s.pdf")
-fig5.savefig("figures/country_difference_gdpper_percent_SRM_2090s-2020s.png")
+fig5.savefig("../figures/country_difference_gdpper_percent_SRM_2090s-2020s.pdf")
+fig5.savefig("../figures/country_difference_gdpper_percent_SRM_2090s-2020s.png")
 
 plt.close()
 
@@ -1371,7 +1371,7 @@ cb.set_label("GDP per capita in 1990\n(1990 US$)", rotation=270, size=14, labelp
 cb.ax.tick_params(labelsize=14)
 
 plt.savefig(
-    "figures/histogram_GDPper_difference_GDP_share.pdf",
+    "../figures/histogram_GDPper_difference_GDP_share.pdf",
     dpi=300,
     bbox_inches="tight",
 )
