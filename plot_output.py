@@ -13,13 +13,10 @@ import pandas as pd
 import seaborn.apionly as sns
 from matplotlib.colorbar import ColorbarBase
 from matplotlib.colors import (
-    Colormap,
     BoundaryNorm,
     LinearSegmentedColormap,
     ListedColormap,
     TwoSlopeNorm,
-    to_hex,
-    to_rgb,
 )
 
 sys.path.insert(
@@ -99,7 +96,6 @@ wealth = np.loadtxt(
 nyears = wealth.shape[0]
 
 for isim in range(len(names)):
-
     for ivar in variables:
         var = np.loadtxt(file_path + names[isim] + "_" + ivar + ".txt", skiprows=2)[
             :nyears, :
@@ -108,19 +104,18 @@ for isim in range(len(names)):
         exec(simulations[isim + 1] + "_" + ivar + "= var")
 
     if isim != 0:
-        var = np.loadtxt(file_path + names[isim] + "_global_temp.txt", usecols=1)[:nyears]
+        var = np.loadtxt(file_path + names[isim] + "_global_temp.txt", usecols=1)[
+            :nyears
+        ]
         print(simulations[isim + 1] + "_global_temp= var")
         exec(simulations[isim + 1] + "_global_temp= var")
-
-
-
 
 
 # Read in Henri's data:
 srm_ai = np.loadtxt("standalone_output/ai.txt")[:, 1 : nyears + 1].T
 srm_fp_gdp = np.loadtxt("standalone_output/reg_gdp.txt")[:, 1 : nyears + 1].T
 srm_fp_capital = np.loadtxt("standalone_output/capital.txt")[:, 1 : nyears + 1].T
-#srm_fp_emissions = np.loadtxt("standalone_output/regional_emissions.txt")[:, 1 : nyears + 1].T
+# srm_fp_emissions = np.loadtxt("standalone_output/regional_emissions.txt")[:, 1 : nyears + 1].T
 srm_fp_regtemp = np.loadtxt("standalone_output/regional_temperature.txt")[
     :, 1 : nyears + 1
 ].T
@@ -280,7 +275,23 @@ def add_bubble_label(fig, position, labels, label_values, title):
     )
     legend.get_title().set_fontsize("12")
 
-def add_country_names(ax, x, y, tx, ty, country_name, cmap, color, size, horizontalalignment, vmin=None, vmax=None, norm=None, text=True):
+
+def add_country_names(
+    ax,
+    x,
+    y,
+    tx,
+    ty,
+    country_name,
+    cmap,
+    color,
+    size,
+    horizontalalignment,
+    vmin=None,
+    vmax=None,
+    norm=None,
+    text=True,
+):
 
     ax.scatter(
         x,
@@ -297,7 +308,7 @@ def add_country_names(ax, x, y, tx, ty, country_name, cmap, color, size, horizon
         s=size,
     )
 
-    if text==True:
+    if text == True:
         ax.text(
             tx,
             ty,
@@ -447,10 +458,28 @@ for isim, sim in enumerate(simulations):
     exec(sim + "_pop_temp = pop_temp")
     exec(sim + "_area_temp = area_temp")
 
-base_global_gdpper = np.average(np.stack((base_e1_sum_gdpper_detrended,base_e2_sum_gdpper_detrended,base_e3_sum_gdpper_detrended),axis=0), axis=0)
-srm_global_gdpper = np.average(np.stack((srm_e1_sum_gdpper_detrended,srm_e2_sum_gdpper_detrended,srm_e3_sum_gdpper_detrended),axis=0), axis=0)
-
-
+base_global_gdpper = np.average(
+    np.stack(
+        (
+            base_e1_sum_gdpper_detrended,
+            base_e2_sum_gdpper_detrended,
+            base_e3_sum_gdpper_detrended,
+        ),
+        axis=0,
+    ),
+    axis=0,
+)
+srm_global_gdpper = np.average(
+    np.stack(
+        (
+            srm_e1_sum_gdpper_detrended,
+            srm_e2_sum_gdpper_detrended,
+            srm_e3_sum_gdpper_detrended,
+        ),
+        axis=0,
+    ),
+    axis=0,
+)
 
 
 # --------------------------------------------------------------------------------------
@@ -567,12 +596,38 @@ for c, country in enumerate(chosen_countries):
                 + "_regtemp[iyear, :], indices, weights=pops[iyear, :])"
             )
 
-base_dtemp_country = np.average(np.stack((base_e1_dtemp_country,base_e2_dtemp_country,base_e3_dtemp_country),axis=0), axis=0)
-srm_dtemp_country = np.average(np.stack((srm_e1_dtemp_country,srm_e2_dtemp_country,srm_e3_dtemp_country),axis=0), axis=0)
-base_gdp_country = np.average(np.stack((base_e1_gdp_country,base_e2_gdp_country,base_e3_gdp_country),axis=0), axis=0)
-srm_gdp_country = np.average(np.stack((srm_e1_gdp_country,srm_e2_gdp_country,srm_e3_gdp_country),axis=0), axis=0)
-base_gdpper_country = np.average(np.stack((base_e1_gdpper_country,base_e2_gdpper_country,base_e3_gdpper_country),axis=0), axis=0)
-srm_gdpper_country = np.average(np.stack((srm_e1_gdpper_country,srm_e2_gdpper_country,srm_e3_gdpper_country),axis=0), axis=0)
+base_dtemp_country = np.average(
+    np.stack(
+        (base_e1_dtemp_country, base_e2_dtemp_country, base_e3_dtemp_country), axis=0
+    ),
+    axis=0,
+)
+srm_dtemp_country = np.average(
+    np.stack(
+        (srm_e1_dtemp_country, srm_e2_dtemp_country, srm_e3_dtemp_country), axis=0
+    ),
+    axis=0,
+)
+base_gdp_country = np.average(
+    np.stack((base_e1_gdp_country, base_e2_gdp_country, base_e3_gdp_country), axis=0),
+    axis=0,
+)
+srm_gdp_country = np.average(
+    np.stack((srm_e1_gdp_country, srm_e2_gdp_country, srm_e3_gdp_country), axis=0),
+    axis=0,
+)
+base_gdpper_country = np.average(
+    np.stack(
+        (base_e1_gdpper_country, base_e2_gdpper_country, base_e3_gdpper_country), axis=0
+    ),
+    axis=0,
+)
+srm_gdpper_country = np.average(
+    np.stack(
+        (srm_e1_gdpper_country, srm_e2_gdpper_country, srm_e3_gdpper_country), axis=0
+    ),
+    axis=0,
+)
 
 start_temp_country = np.average(srm_fp_temp_country[:10, :], axis=0)
 
@@ -638,9 +693,12 @@ avg_srm_pop_temp = np.average(
 avg_srm_area_temp = np.average(
     np.stack((srm_e1_area_temp, srm_e2_area_temp, srm_e3_area_temp)), axis=0
 )
-avg_srm_global_temp = np.average(
-    np.stack((srm_e1_global_temp, srm_e2_global_temp, srm_e3_global_temp)), axis=0
-) - global_pi_temperature
+avg_srm_global_temp = (
+    np.average(
+        np.stack((srm_e1_global_temp, srm_e2_global_temp, srm_e3_global_temp)), axis=0
+    )
+    - global_pi_temperature
+)
 avg_srm_sum_actual_emissions = np.average(
     np.stack(
         (
@@ -669,9 +727,13 @@ avg_base_pop_temp = np.average(
 avg_base_area_temp = np.average(
     np.stack((base_e1_area_temp, base_e2_area_temp, base_e3_area_temp)), axis=0
 )
-avg_base_global_temp = np.average(
-    np.stack((base_e1_global_temp, base_e2_global_temp, base_e3_global_temp)), axis=0
-) - global_pi_temperature
+avg_base_global_temp = (
+    np.average(
+        np.stack((base_e1_global_temp, base_e2_global_temp, base_e3_global_temp)),
+        axis=0,
+    )
+    - global_pi_temperature
+)
 
 ax3[0].plot(
     years[:sim_years],
@@ -730,23 +792,49 @@ ax3[1].plot(
     linestyle="--",
 )
 
-ax3[1].plot(0,0, color="k", label="Area-weighted", linewidth=3, linestyle=':')
-ax3[1].plot(0,0, color="k", label="Population-weighted", linewidth=3)
-ax3[1].plot(0,0, color="k", label="Global", linewidth=3, linestyle="--")
+ax3[1].plot(0, 0, color="k", label="Area-weighted", linewidth=3, linestyle=":")
+ax3[1].plot(0, 0, color="k", label="Population-weighted", linewidth=3)
+ax3[1].plot(0, 0, color="k", label="Global", linewidth=3, linestyle="--")
 
-ax3[1].set_xlim(1985,2105)
+ax3[1].set_xlim(1985, 2105)
 
-print("SRM last 20 years: ", np.mean(avg_srm_area_temp[-20:]), np.mean(avg_srm_pop_temp[-20:]))
-print("SRM last 10 years: ", np.mean(avg_srm_area_temp[-10:]), np.mean(avg_srm_pop_temp[-10:]))
-print("Baseline last 10 years: ", np.mean(avg_base_area_temp[-10:]), np.mean(avg_base_pop_temp[-10:]))
+print(
+    "SRM last 20 years: ",
+    np.mean(avg_srm_area_temp[-20:]),
+    np.mean(avg_srm_pop_temp[-20:]),
+)
+print(
+    "SRM last 10 years: ",
+    np.mean(avg_srm_area_temp[-10:]),
+    np.mean(avg_srm_pop_temp[-10:]),
+)
+print(
+    "Baseline last 10 years: ",
+    np.mean(avg_base_area_temp[-10:]),
+    np.mean(avg_base_pop_temp[-10:]),
+)
 
 for iyear in range(110):
-    print(iyear+1990, avg_base_area_temp[iyear], avg_base_pop_temp[iyear])
+    print(iyear + 1990, avg_base_area_temp[iyear], avg_base_pop_temp[iyear])
 
 
-print("Difference in emissions: ", avg_srm_sum_actual_emissions - avg_base_sum_actual_emissions)
-print("Difference in emissions (%): ", 100*(avg_srm_sum_actual_emissions - avg_base_sum_actual_emissions)/avg_base_sum_actual_emissions)
-print("Total difference: ", np.sum(avg_srm_sum_actual_emissions[40:] - avg_base_sum_actual_emissions[40:]), 100*np.sum(avg_srm_sum_actual_emissions[40:] - avg_base_sum_actual_emissions[40:])/np.sum(avg_base_sum_actual_emissions))
+print(
+    "Difference in emissions: ",
+    avg_srm_sum_actual_emissions - avg_base_sum_actual_emissions,
+)
+print(
+    "Difference in emissions (%): ",
+    100
+    * (avg_srm_sum_actual_emissions - avg_base_sum_actual_emissions)
+    / avg_base_sum_actual_emissions,
+)
+print(
+    "Total difference: ",
+    np.sum(avg_srm_sum_actual_emissions[40:] - avg_base_sum_actual_emissions[40:]),
+    100
+    * np.sum(avg_srm_sum_actual_emissions[40:] - avg_base_sum_actual_emissions[40:])
+    / np.sum(avg_base_sum_actual_emissions),
+)
 
 ax3[1].set_xlabel("Year", fontsize=20)
 ax3[0].set_ylabel("Emissions (GtC)", fontsize=20)
@@ -809,12 +897,12 @@ cmap = LinearSegmentedColormap("BlueRed3", cdict3)
 cmap_red = cmr.get_sub_cmap(cmap, 0.5, 1)
 cmap_blue = cmr.get_sub_cmap(cmap, 0.33, 0.5)
 
-colors1 = cmap_blue(np.linspace(0., 1, 128))
+colors1 = cmap_blue(np.linspace(0.0, 1, 128))
 colors2 = cmap_red(np.linspace(0, 1, 128))
 
 # combine them and build a new colormap
 colors = np.vstack((colors1, colors2))
-population_cmap = LinearSegmentedColormap.from_list('my_colormap', colors)
+population_cmap = LinearSegmentedColormap.from_list("my_colormap", colors)
 
 vmin2 = -100
 vmax2 = 300
@@ -847,9 +935,7 @@ expected_srm_gdpper_country_decade = (
 srm_dgdpper_country_decade = (
     100
     * (
-        np.average(
-            srm_gdpper_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
-        )
+        np.average(srm_gdpper_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0)
         - expected_gdpper_2020s
     )
     / expected_gdpper_2020s
@@ -857,9 +943,7 @@ srm_dgdpper_country_decade = (
 base_dgdpper_country_decade = (
     100
     * (
-        np.average(
-            base_gdpper_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
-        )
+        np.average(base_gdpper_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0)
         - expected_gdpper_2020s
     )
     / expected_gdpper_2020s
@@ -871,14 +955,10 @@ fp_dtemp_country_decade = np.average(
 )
 srm_dtemp_country_decade = np.average(
     srm_dtemp_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
-) - np.average(
-    srm_dtemp_country[30:40, :], axis=0
-)
+) - np.average(srm_dtemp_country[30:40, :], axis=0)
 base_dtemp_country_decade = np.average(
     base_dtemp_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
-) - np.average(
-    base_dtemp_country[30:40, :], axis=0
-)
+) - np.average(base_dtemp_country[30:40, :], axis=0)
 
 dpopulation_country_decade = (
     100
@@ -933,46 +1013,50 @@ pscat1 = ax5[2].scatter(
 # Add country names:
 for c, country in enumerate(all_countries):
     if country in text_countires:
-
         x = base_dtemp_country_decade[c]
         y = base_dgdpper_country_decade[c]
         tx = x
         ty = y
-        alignment='left'
+        alignment = "left"
 
-        if country == "United States" or country == "Somalia" or country == "Mali" or country == "Spain":
-            alignment='right'
+        if (
+            country == "United States"
+            or country == "Somalia"
+            or country == "Mali"
+            or country == "Spain"
+        ):
+            alignment = "right"
         elif country == "China" or country == "India":
             alignment = "center"
 
         print(country, alignment)
 
-
-        add_country_names(ax=ax5[0],
-                          x=x,
-                          y=y,
-                          tx=tx,
-                          ty=ty,
-                          country_name=country,
-                          cmap=population_cmap,
-                          color=dpopulation_country_decade[c],
-                          size=np.sqrt(population_countries[30, c] * 1e3 / 1e3),
-                          horizontalalignment=alignment,
-                          norm=divnorm)
-
+        add_country_names(
+            ax=ax5[0],
+            x=x,
+            y=y,
+            tx=tx,
+            ty=ty,
+            country_name=country,
+            cmap=population_cmap,
+            color=dpopulation_country_decade[c],
+            size=np.sqrt(population_countries[30, c] * 1e3 / 1e3),
+            horizontalalignment=alignment,
+            norm=divnorm,
+        )
 
         x = srm_dtemp_country_decade[c]
         y = srm_dgdpper_country_decade[c]
         tx = x
         ty = y
-        alignment='left'
+        alignment = "left"
 
         if country == "Canada":
-            alignment='right'
-        elif country=="United Kingdom":
+            alignment = "right"
+        elif country == "United Kingdom":
             alignment = "center"
             ty = y - 2.5
-            tx = x -0.1
+            tx = x - 0.1
         elif country == "United States":
             ty = y + 2
         elif country == "Somalia":
@@ -985,50 +1069,79 @@ for c, country in enumerate(all_countries):
         elif country == "China":
             alignment = "center"
         elif country == "India" or country == "Niger":
-            ty = y +1
+            ty = y + 1
 
-        add_country_names(ax=ax5[1],
-                        x=x,
-                        y=y,
-                        tx = tx,
-                        ty = ty,
-                        country_name=country,
-                        cmap=population_cmap,
-                        color=dpopulation_country_decade[c],
-                        size=np.sqrt(population_countries[30, c] * 1e3 / 1e3),
-                        horizontalalignment=alignment,
-                        norm=divnorm)
+        add_country_names(
+            ax=ax5[1],
+            x=x,
+            y=y,
+            tx=tx,
+            ty=ty,
+            country_name=country,
+            cmap=population_cmap,
+            color=dpopulation_country_decade[c],
+            size=np.sqrt(population_countries[30, c] * 1e3 / 1e3),
+            horizontalalignment=alignment,
+            norm=divnorm,
+        )
 
         x = srm_dtemp_country_decade[c] - base_dtemp_country_decade[c]
         y = srm_dgdpper_country_decade[c] - base_dgdpper_country_decade[c]
         tx = x
         ty = y
-        alignment='left'
+        alignment = "left"
 
         if country == "United States" or country == "Russia" or country == "Namibia":
-            alignment='right'
+            alignment = "right"
         elif country == "China" or country == "India":
             alignment = "center"
 
-        add_country_names(ax=ax5[2],
-                        x=x,
-                        y=y,
-                        tx = tx,
-                        ty = ty,
-                        country_name=country,
-                        cmap=population_cmap,
-                        color=dpopulation_country_decade[c],
-                        size=np.sqrt(population_countries[30, c] * 1e3 / 1e3),
-                        horizontalalignment=alignment,
-                        norm=divnorm)
+        add_country_names(
+            ax=ax5[2],
+            x=x,
+            y=y,
+            tx=tx,
+            ty=ty,
+            country_name=country,
+            cmap=population_cmap,
+            color=dpopulation_country_decade[c],
+            size=np.sqrt(population_countries[30, c] * 1e3 / 1e3),
+            horizontalalignment=alignment,
+            norm=divnorm,
+        )
 
 
 # Calculate global values:
-base_dtemp_global_decade = np.average(avg_base_pop_temp[10 * (ndecades - 1) : 10 * ndecades]) - np.average(avg_base_pop_temp[30:40])
-base_dgdpper_global_decade  = 100 *(np.average(base_global_gdpper[10 * (ndecades - 1) : 10 * ndecades]) - np.average(srm_fp_sum_gdpper_detrended[30:40]))/ np.average(srm_fp_sum_gdpper_detrended[30:40])
-srm_dtemp_global_decade = np.average(avg_srm_pop_temp[10 * (ndecades - 1) : 10 * ndecades]) - np.average(avg_base_pop_temp[30:40])
-srm_dgdpper_global_decade =  100 *(np.average(srm_global_gdpper[10 * (ndecades - 1) : 10 * ndecades]) - np.average(srm_fp_sum_gdpper_detrended[30:40]))/ np.average(srm_fp_sum_gdpper_detrended[30:40])
-dpopulation_global_decade = 100* (np.average(global_population[10 * (ndecades - 1) : 10 * ndecades])- np.average(global_population[30:40]))/ np.average(global_population[30:40])
+base_dtemp_global_decade = np.average(
+    avg_base_pop_temp[10 * (ndecades - 1) : 10 * ndecades]
+) - np.average(avg_base_pop_temp[30:40])
+base_dgdpper_global_decade = (
+    100
+    * (
+        np.average(base_global_gdpper[10 * (ndecades - 1) : 10 * ndecades])
+        - np.average(srm_fp_sum_gdpper_detrended[30:40])
+    )
+    / np.average(srm_fp_sum_gdpper_detrended[30:40])
+)
+srm_dtemp_global_decade = np.average(
+    avg_srm_pop_temp[10 * (ndecades - 1) : 10 * ndecades]
+) - np.average(avg_base_pop_temp[30:40])
+srm_dgdpper_global_decade = (
+    100
+    * (
+        np.average(srm_global_gdpper[10 * (ndecades - 1) : 10 * ndecades])
+        - np.average(srm_fp_sum_gdpper_detrended[30:40])
+    )
+    / np.average(srm_fp_sum_gdpper_detrended[30:40])
+)
+dpopulation_global_decade = (
+    100
+    * (
+        np.average(global_population[10 * (ndecades - 1) : 10 * ndecades])
+        - np.average(global_population[30:40])
+    )
+    / np.average(global_population[30:40])
+)
 
 # Add global value:
 add_global_value(
@@ -1100,7 +1213,7 @@ cbar.set_label(
     labelpad=18,
 )
 
-cbar.set_ticks([-100,0,100,200,300])
+cbar.set_ticks([-100, 0, 100, 200, 300])
 cbar.ax.tick_params(labelsize=10)
 
 
@@ -1168,13 +1281,13 @@ initial_gdp_share = 100 * srm_gdp_country[0, :] / total_gdp[0]
 df = pd.DataFrame(initial_gdp_share, columns=["initial_gdp_share"], index=all_countries)
 
 df["gdp_per_capita_1990"] = srm_gdpper_country[0, :]
-df["gdpper_diff"] = (srm_dgdpper_country_decade - base_dgdpper_country_decade)
+df["gdpper_diff"] = srm_dgdpper_country_decade - base_dgdpper_country_decade
 print(df)
 df["initial_population"] = population_countries[0, :]
 print(population_countries[0, :])
 
 
-#gdp_bin = [3750, 7500, 15000, 30000, 200000]
+# gdp_bin = [3750, 7500, 15000, 30000, 200000]
 gdp_bin = [3500, 7000, 14000, 28000, 200000]
 gdp_bin = [3000, 6000, 12000, 24000, 200000]
 for ig, gdpcap in enumerate(gdp_bin[::-1]):
@@ -1209,37 +1322,39 @@ p_bar = plt.bar(
 # Add country names:
 for c, country in enumerate(df.index):
     if country in text_countires:
-        x = bins[c+1]
+        x = bins[c + 1]
         y = df["gdpper_diff"][country] + 0.7
         color = df["color"][c]
-        alignment = 'right'
+        alignment = "right"
 
         if country in ["Norway", "Russia", "Canada", "Germany"]:
             y -= 2.5
             x = bins[c]
-            alignment = 'left'
+            alignment = "left"
             if country == "Norway":
-                y -=2
+                y -= 2
                 # Add line:
-                ax1.vlines(bins[c] + 0.5*(bins[c+1] - bins[c]), y+2, df["gdpper_diff"][country]-0.7, linewidth=0.5, color=color)
+                ax1.vlines(
+                    bins[c] + 0.5 * (bins[c + 1] - bins[c]),
+                    y + 2,
+                    df["gdpper_diff"][country] - 0.7,
+                    linewidth=0.5,
+                    color=color,
+                )
         elif country == "United States":
-            x = bins[c] + 0.5*(bins[c+1] - bins[c])
-            alignment = 'center'
+            x = bins[c] + 0.5 * (bins[c + 1] - bins[c])
+            alignment = "center"
         elif country == "Namibia":
-            y +=1
+            y += 1
         elif country == "Iraq":
             y += 2
-            #ax1.vlines(bins[c] + 0.5*(bins[c+1] - bins[c]), df["gdpper_diff"][country]+0.7,y-2, linewidth=0.5, color=color)
+            # ax1.vlines(bins[c] + 0.5*(bins[c+1] - bins[c]), df["gdpper_diff"][country]+0.7,y-2, linewidth=0.5, color=color)
 
-        ax1.text(
-            x,
-            y,
-            country,horizontalalignment=alignment,
-            fontsize=10,color=color)
+        ax1.text(x, y, country, horizontalalignment=alignment, fontsize=10, color=color)
 
 
 plt.xlim([-0.1, 100.1])
-plt.ylim([-35,55])
+plt.ylim([-35, 55])
 
 plt.xticks(size=16)
 plt.yticks(size=16)
@@ -1251,9 +1366,7 @@ ax_cb = fig1.add_axes([0.14, 0.55, 0.03, 0.28], frame_on=False)
 
 colors_4cb = ListedColormap(colors[::-1])
 norm = BoundaryNorm([0] + gdp_bin, 1 + colors_4cb.N)
-cb = ColorbarBase(
-    ax_cb, cmap=colors_4cb, norm=norm, ticks=gdp_bin[:-1], alpha=0.8
-)
+cb = ColorbarBase(ax_cb, cmap=colors_4cb, norm=norm, ticks=gdp_bin[:-1], alpha=0.8)
 cb.set_label("GDP per capita in 1990\n(1990 US$)", rotation=270, size=14, labelpad=35)
 cb.ax.tick_params(labelsize=14)
 
