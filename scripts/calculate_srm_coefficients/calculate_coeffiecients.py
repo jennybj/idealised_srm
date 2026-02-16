@@ -57,7 +57,6 @@ pop_china = 0
 
 for icell in range(ncells):
     if country_names[icell] == "South Korea":
-        print(gdp[icell])
         gdp_skorea += gdp[icell]
         pop_skorea += gdp[icell]
 
@@ -86,36 +85,8 @@ for icell in range(ncells):
     if coordinates[icell] not in coordinates[:icell]:
         weights[icell] = np.cos(np.deg2rad(list_latitudes[icell]))
 
-"""
-# Calculate temperature difference:
-global_temp_base_370 = np.average(
-    temperature_base_370 - np.tile(pi_temperature, (nyears_base_370, 1)).T,
-    weights=weights,
-    axis=0,
-)
-global_temp_geoe_370 = np.average(
-    temperature_geoe_370 - np.tile(pi_temperature, (nyears_geoe_370, 1)).T,
-    weights=weights,
-    axis=0,
-)
-
-global_temp_base_585 = np.average(
-    temperature_base_585 - np.tile(pi_temperature, (nyears_base_585, 1)).T,
-    weights=weights,
-    axis=0,
-)
-global_temp_geoe_585 = np.average(
-    temperature_geoe_585 - np.tile(pi_temperature, (nyears_geoe_585, 1)).T,
-    weights=weights,
-    axis=0,
-)
-"""
 expected_temp_base_370 = np.zeros((ncells, nyears_base_370))
-expected_temp_geoe_370 = np.zeros((ncells, nyears_geoe_370))
 expected_temp_base_585 = np.zeros((ncells, nyears_base_585))
-expected_temp_geoe_585 = np.zeros((ncells, nyears_geoe_585))
-expected_370 = np.zeros((ncells, nyears_geoe_370))
-expected_585 = np.zeros((ncells, nyears_geoe_585))
 
 for iyear in range(nyears_base_370):
     expected_temp_base_370[:, iyear] = (
@@ -128,39 +99,6 @@ for iyear in range(nyears_base_585):
         gamma1 * cumulative_emissions_ssp585[25 + iyear]
         + gamma2 * cumulative_emissions_ssp585[25 + iyear] ** 2
     )
-
-"""
-global_expected_temp_base_370 = np.average(
-    expected_temp_base_370, weights=weights, axis=0
-)
-global_expected_temp_base_585 = np.average(
-    expected_temp_base_585, weights=weights, axis=0
-)
-
-# Calculate the expected average difference with SRM (from 10 years):
-for icell in range(ncells):
-    expected_temp_geoe_370[icell, :] = expected_temp_base_370[icell, 40:] - np.average(
-        expected_temp_base_370[icell, 50:]
-        - (temperature_geoe_370[icell, 10:] - pi_temperature[icell])
-    )
-    expected_370[icell, :] = np.average(expected_temp_geoe_370[icell, 10:])
-
-for icell in range(ncells):
-    expected_temp_geoe_585[icell, :] = expected_temp_base_585[icell, 40:] - np.average(
-        expected_temp_base_585[icell, 50:]
-        - (temperature_geoe_585[icell, 10:] - pi_temperature[icell])
-    )
-    expected_585[icell, :] = np.average(expected_temp_geoe_585[icell, 10:])
-"""
-global_expected_temp_geoe_370 = np.average(
-    expected_temp_geoe_370, weights=weights, axis=0
-)
-global_expected_370 = np.average(expected_370, weights=weights, axis=0)
-
-global_expected_temp_geoe_585 = np.average(
-    expected_temp_geoe_585, weights=weights, axis=0
-)
-global_expected_585 = np.average(expected_585, weights=weights, axis=0)
 
 diff_370 = (
     temperature_geoe_370
@@ -239,14 +177,13 @@ for icell in range(ncells):
 
     fit[2, icell, :] = f(years, a_coeffs[2, icell], b_coeffs[2, icell])
 
-    # print(icell, popt)
 
 mean_a_370 = np.average(a_coeffs[0, :], weights=weights)
 mean_b_370 = np.average(b_coeffs[0, :], weights=weights)
 mean_a_585 = np.average(a_coeffs[1, :], weights=weights)
 mean_b_585 = np.average(b_coeffs[1, :], weights=weights)
-mean_a_all = np.average(a_coeffs[2, :], weights=weights)
-mean_b_all = np.average(b_coeffs[2, :], weights=weights)
+mean_a_both = np.average(a_coeffs[2, :], weights=weights)
+mean_b_both = np.average(b_coeffs[2, :], weights=weights)
 
 
 print("Number of fails: ", len(fails))
@@ -256,7 +193,7 @@ print(
     np.max(b_coeffs[2, :]),
     np.min(b_coeffs[2, :]),
 )
-print(mean_a_370, mean_b_370, mean_a_585, mean_b_585, mean_a_all, mean_b_all)
+print(mean_a_370, mean_b_370, mean_a_585, mean_b_585, mean_a_both, mean_b_both)
 
 for icell in fails:
     print(icell)
@@ -264,7 +201,7 @@ for icell in fails:
         np.concatenate((diff_370[icell, -10:], diff_585[icell, -10:]))
     )
     a_coeffs[2, icell] = -end_temp
-    b_coeffs[2, icell] = mean_b_all
+    b_coeffs[2, icell] = mean_b_both
 
     fit[2, icell, :] = f(years, a_coeffs[2, icell], b_coeffs[2, icell])
 
@@ -274,6 +211,7 @@ global_fit = np.average(fit, axis=1, weights=weights)
 
 # SET FINAL OFFSET
 # Should be same as a_coeff, unless temperature change is far from this at the end.
+# Currently set to 10%.
 
 final_offset = a_coeffs[2, :]
 count = 0
@@ -293,7 +231,7 @@ for icell in range(ncells):
     fit[2, icell, 100:] = -final_offset[icell]
 
 
-print(count)
+print("Number of cells more than 10% from a_coeff", count)
 
 # ---------------------------------------------------------------------------
 
@@ -330,7 +268,9 @@ file2.write("# Column 3: Offset coefficient (a)\n")
 file2.write("# Column 4: Exponent coefficent (b)\n")
 file2.write("# Column 5: Constant offset after 100 years\n")
 file2.write("# Column 6: Country name\n")
-
+file2.write(
+    "# In grid cells where the fitting failed, the country name is marked with an asterisk\n"
+)
 
 for c, country in enumerate(country_names):
     file1.writelines(["%16.1f" % list_latitudes[c]])
