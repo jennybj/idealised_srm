@@ -458,6 +458,58 @@ for isim, sim in enumerate(simulations):
     exec(sim + "_pop_temp = pop_temp")
     exec(sim + "_area_temp = area_temp")
 
+# --------------------------------------------------------------------------------------
+
+# CALCULATE ENSEMBLE MEANS
+
+avg_srm_pop_temp = np.average(
+    np.stack((srm_e1_pop_temp, srm_e2_pop_temp, srm_e3_pop_temp)), axis=0
+)
+avg_srm_area_temp = np.average(
+    np.stack((srm_e1_area_temp, srm_e2_area_temp, srm_e3_area_temp)), axis=0
+)
+avg_srm_global_temp = (
+    np.average(
+        np.stack((srm_e1_global_temp, srm_e2_global_temp, srm_e3_global_temp)), axis=0
+    )
+    - global_pi_temperature
+)
+avg_srm_sum_actual_emissions = np.average(
+    np.stack(
+        (
+            srm_e1_sum_actual_emissions,
+            srm_e2_sum_actual_emissions,
+            srm_e3_sum_actual_emissions,
+        )
+    ),
+    axis=0,
+)
+
+avg_base_sum_actual_emissions = np.average(
+    np.stack(
+        (
+            base_e1_sum_actual_emissions,
+            base_e2_sum_actual_emissions,
+            base_e3_sum_actual_emissions,
+        )
+    ),
+    axis=0,
+)
+
+avg_base_pop_temp = np.average(
+    np.stack((base_e1_pop_temp, base_e2_pop_temp, base_e3_pop_temp)), axis=0
+)
+avg_base_area_temp = np.average(
+    np.stack((base_e1_area_temp, base_e2_area_temp, base_e3_area_temp)), axis=0
+)
+avg_base_global_temp = (
+    np.average(
+        np.stack((base_e1_global_temp, base_e2_global_temp, base_e3_global_temp)),
+        axis=0,
+    )
+    - global_pi_temperature
+)
+
 base_global_gdpper = np.average(
     np.stack(
         (
@@ -636,7 +688,7 @@ start_temp_country = np.average(srm_fp_temp_country[:10, :], axis=0)
 
 # PLOT EMISSIONS AND AVERAGE TEMPERATURE AGAINST TIME
 
-fig3, ax3 = plt.subplots(nrows=2, ncols=1, figsize=(10, 12))
+fig3, ax3 = plt.subplots(nrows=3, ncols=1, figsize=(10, 16))
 
 years = np.arange(1990, 2101)
 
@@ -653,6 +705,10 @@ for isim, sim in enumerate(simulations[2:]):
     exec("pop_temp = " + sim + "_pop_temp")
     exec("area_temp = " + sim + "_area_temp")
     exec("global_temp = " + sim + "_global_temp - global_pi_temperature")
+    exec("global_gdpper = " + sim + "_sum_gdpper_detrended")
+    global_gdpper_change = (
+        100 * (global_gdpper - base_global_gdpper[0]) / base_global_gdpper[0]
+    )
 
     ax3[0].plot(
         years[start_year:sim_years],
@@ -678,62 +734,23 @@ for isim, sim in enumerate(simulations[2:]):
         color=color,
         linestyle=":",
     )
-    ax3[1].plot(
+    #    ax3[1].plot(
+    #        years[start_year:sim_years],
+    #        global_temp[start_year:],
+    #        linewidth=1,
+    #        alpha=0.4,
+    #        color=color,
+    #        linestyle="--",
+    #    )
+
+    ax3[2].plot(
         years[start_year:sim_years],
-        global_temp[start_year:],
+        global_gdpper_change[start_year:],
         linewidth=1,
         alpha=0.4,
         color=color,
-        linestyle="--",
     )
 
-avg_srm_pop_temp = np.average(
-    np.stack((srm_e1_pop_temp, srm_e2_pop_temp, srm_e3_pop_temp)), axis=0
-)
-avg_srm_area_temp = np.average(
-    np.stack((srm_e1_area_temp, srm_e2_area_temp, srm_e3_area_temp)), axis=0
-)
-avg_srm_global_temp = (
-    np.average(
-        np.stack((srm_e1_global_temp, srm_e2_global_temp, srm_e3_global_temp)), axis=0
-    )
-    - global_pi_temperature
-)
-avg_srm_sum_actual_emissions = np.average(
-    np.stack(
-        (
-            srm_e1_sum_actual_emissions,
-            srm_e2_sum_actual_emissions,
-            srm_e3_sum_actual_emissions,
-        )
-    ),
-    axis=0,
-)
-
-avg_base_sum_actual_emissions = np.average(
-    np.stack(
-        (
-            base_e1_sum_actual_emissions,
-            base_e2_sum_actual_emissions,
-            base_e3_sum_actual_emissions,
-        )
-    ),
-    axis=0,
-)
-
-avg_base_pop_temp = np.average(
-    np.stack((base_e1_pop_temp, base_e2_pop_temp, base_e3_pop_temp)), axis=0
-)
-avg_base_area_temp = np.average(
-    np.stack((base_e1_area_temp, base_e2_area_temp, base_e3_area_temp)), axis=0
-)
-avg_base_global_temp = (
-    np.average(
-        np.stack((base_e1_global_temp, base_e2_global_temp, base_e3_global_temp)),
-        axis=0,
-    )
-    - global_pi_temperature
-)
 
 ax3[0].plot(
     years[:sim_years],
@@ -755,14 +772,19 @@ ax3[1].plot(
     color="blue",
     linestyle=":",
 )
-ax3[1].plot(
+# ax3[1].plot(
+#    years[:sim_years],
+#    avg_base_global_temp,
+#    linewidth=3,
+#    color="blue",
+#    linestyle="--",
+# )
+ax3[2].plot(
     years[:sim_years],
-    avg_base_global_temp,
+    100 * (base_global_gdpper - base_global_gdpper[0]) / base_global_gdpper[0],
     linewidth=3,
     color="blue",
-    linestyle="--",
 )
-
 
 ax3[0].plot(
     years[39:sim_years],
@@ -784,19 +806,45 @@ ax3[1].plot(
     color="red",
     linestyle=":",
 )
-ax3[1].plot(
+# ax3[1].plot(
+#    years[39:sim_years],
+#    avg_srm_global_temp[39:],
+#    linewidth=3,
+#    color="red",
+#    linestyle="--",
+# )
+ax3[2].plot(
     years[39:sim_years],
-    avg_srm_global_temp[39:],
+    100 * (srm_global_gdpper[39:] - base_global_gdpper[0]) / base_global_gdpper[0],
     linewidth=3,
     color="red",
-    linestyle="--",
 )
 
 ax3[1].plot(0, 0, color="k", label="Area-weighted", linewidth=3, linestyle=":")
 ax3[1].plot(0, 0, color="k", label="Population-weighted", linewidth=3)
-ax3[1].plot(0, 0, color="k", label="Global", linewidth=3, linestyle="--")
+# ax3[1].plot(0, 0, color="k", label="Global", linewidth=3, linestyle="--")
 
-ax3[1].set_xlim(1985, 2105)
+
+ax3[2].set_xlabel("Year", fontsize=20)
+ax3[0].set_ylabel("Emissions (GtC)", fontsize=20)
+ax3[1].set_ylabel("Temperature change (\N{DEGREE SIGN}C)", fontsize=20)
+ax3[2].set_ylabel("GDP per capita change (%)", fontsize=20)
+
+for ax in ax3:
+    ax.xaxis.set_tick_params(labelsize=16)
+    ax.yaxis.set_tick_params(labelsize=16)
+    ax.legend(fontsize=20)
+    ax.set_xlim(1985, 2105)
+
+fig3.text(0.01, 0.98, "(a)", fontsize=16, wrap=True)
+fig3.text(0.01, 0.65, "(b)", fontsize=16, wrap=True)
+fig3.text(0.01, 0.34, "(c)", fontsize=16, wrap=True)
+
+fig3.subplots_adjust(left=0.1, right=0.98, top=0.96, bottom=0.05, hspace=0.1)
+
+fig3.savefig("../figures/emissions_temperature_gdpper_compare.pdf")
+
+# --------------------------------------------------------------------------------------
 
 print(
     "SRM last 20 years: ",
@@ -807,16 +855,25 @@ print(
     "SRM last 10 years: ",
     np.mean(avg_srm_area_temp[-10:]),
     np.mean(avg_srm_pop_temp[-10:]),
+    np.mean((srm_global_gdpper[-10:] - base_global_gdpper[0]) / base_global_gdpper[0]),
 )
 print(
     "Baseline last 10 years: ",
     np.mean(avg_base_area_temp[-10:]),
     np.mean(avg_base_pop_temp[-10:]),
+    np.mean((base_global_gdpper[-10:] - base_global_gdpper[0]) / base_global_gdpper[0]),
+)
+print(
+    "2020s:",
+    np.mean(
+        np.mean(
+            (srm_global_gdpper[30:40] - base_global_gdpper[0]) / base_global_gdpper[0]
+        ),
+    ),
 )
 
 for iyear in range(110):
     print(iyear + 1990, avg_base_area_temp[iyear], avg_base_pop_temp[iyear])
-
 
 print(
     "Difference in emissions: ",
@@ -835,24 +892,6 @@ print(
     * np.sum(avg_srm_sum_actual_emissions[40:] - avg_base_sum_actual_emissions[40:])
     / np.sum(avg_base_sum_actual_emissions),
 )
-
-ax3[1].set_xlabel("Year", fontsize=20)
-ax3[0].set_ylabel("Emissions (GtC)", fontsize=20)
-ax3[1].set_ylabel("Temperature change (\N{DEGREE SIGN}C)", fontsize=20)
-ax3[0].xaxis.set_tick_params(labelsize=16)
-ax3[0].yaxis.set_tick_params(labelsize=16)
-ax3[1].xaxis.set_tick_params(labelsize=16)
-ax3[1].yaxis.set_tick_params(labelsize=16)
-ax3[0].legend(fontsize=20)
-ax3[1].legend(fontsize=20)
-
-fig3.text(0.01, 0.98, "(a)", fontsize=16, wrap=True)
-fig3.text(0.01, 0.49, "(b)", fontsize=16, wrap=True)
-
-fig3.subplots_adjust(left=0.1, right=0.98, top=0.96, bottom=0.05, hspace=0.1)
-
-fig3.savefig("../figures/emissions_and_temperature_compare.pdf")
-
 
 # --------------------------------------------------------------------------------------
 
