@@ -47,7 +47,7 @@ The data are licensed under a Creative Commons/CC-BY-NC license. See LICENSE.txt
 
 | Data  | File name| Path | Location | Notes                                                                 |
 |-----------------------------------------------------------------|-------------------------------|---------------------------------------|--------------------------|------------------------------------------------|
-| Cumulative CO2 emissions for SSP126, SSP245, SSP370, and SSP585 | `SSP_cumulative_emissions.txt`| `data/input_coefficients/` | Current repo | Created from script in [NorESM2-DIAM HitHub](https://github.com/jennybj/coupling_noresm2_diam)  | |
+| Cumulative CO2 emissions for SSP126, SSP245, SSP370, and SSP585 | `SSP_cumulative_emissions.txt`| `data/input_coefficients/` | Current repo | Created from script in [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam)  | |
 | Historical + SSP370 with only CO2 emissions | `onlyCO2.nc`   | `data/input_coefficients/` | [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam) | |
 | SSP370 with SRM from 2030 and only CO2 emissions | `reduced_solar_const_1percent.nc`   | `data/input_coefficients/` | Current repo | |
 | SSP585 with only CO2 emissions | `ssp585_onlyCO2.nc`   | `data/input_coefficients/` | Current repo | |
