@@ -16,7 +16,7 @@ from module_coupling import (
 
 # READ IN DATA
 
-path = "/home/jennybj/Documents/koding/filer/scenarios/"
+path = "../../data/input_to_regression/"
 
 file_base_370 = path + "onlyCO2.nc"
 file_geoe_370 = path + "reduced_solar_const_1percent.nc"
