@@ -15,68 +15,44 @@ Contributors:
 ## Overview
 
 An idealised Solar Radiation Management (SRM) experiment using the coupled climate-economy model NorESM2-DIAM.
-<!--
-This repository contains the code necessary to replicate the data presented in Bjordal et al., 2025, and in general, to run the coupled NorESM2-DIAM model. It also contains some of the input data (small size), and otherwise instructions as to where the remaining input data can be found.
--->
+
+This repository contains the experimental setup, modifications, and analysis code for replicating the experiments in the paper "Regional Economic Impacts and Emission Responses under Solar Radiation Modification" (in prep). The coupled NorESM2-DIAM model and implementation can be found in [this repo](https://github.com/jennybj/coupling_noresm2_diam), except the Earth system component, NorESM2, which can be found in [this repo](https://github.com/NorESMhub/NorESM). The current repo focuses on:
+
+- Modifications made to the original model for the experiments in the paper
+- Code for setting up and running the experiment
+- Data analysis and visualization: including scripts to analyze and plot the experimental results
+
+Refer to the NorESM2-DIAM repository for the model's usage instructions. This repository assumes you have already set up the base model and provides additional tools to run and evaluate the experiments specific to the paper.
+
 ## Data Availability and Provenance Statements
 
 <!--
 ### Statement about Rights
 - [x] I certify that the author(s) of the manuscript have legitimate access to and permission to use the data used in this manuscript.
 - [x] I certify that the author(s) of the manuscript have documented permission to redistribute/publish the data contained within this replication package. Appropriate permission are documented in the [LICENSE.txt](LICENSE.txt) file.
--->
+
 
 ### License for Data
 
 The data are licensed under a Creative Commons/CC-BY-NC license. See LICENSE.txt for details.
-
+-->
 ### Summary of Availability
 
 - [x] All data **are** publicly available.
 - [ ] Some data **cannot be made** publicly available.
 - [ ] **No data can be made** publicly available.
 
-### Details on each Data Source
-
-| Data name                        | File name                  | Location   | Provided | Citation               |
-|----------------------------------|----------------------------|------------|----------|------------------------|
-| "World Population Prospects 2024"| `undp_pop_growth_2024.xlsx`| `data/raw/`| TRUE | UN DESA, Population Division, 2024 |
-| "G-ECON v4.0"                    | `Gecon40_post_final.csv`   | `data/raw/`| TRUE     | Nordhaus et al. 2006 |
-| Historical CO2 emissions         | `emissions-cmip6_CO2_anthro_surface_175001-201512_fv_1.9x2.5_c20181011.nc` | `data/input_emission_data/`| TRUE | U.S. National Science Foundation, 2023 |
-
-
-#### "World Population Prospects 2024"
-Data on historical country-level population levels and future population projections were downloaded from the United Nations Department of Economic and Social Affairs [UN DESA], Population Division, 2024. We use the complete .xlsx file format. Data can be downloaded from [here](https://population.un.org/wpp/assets/Excel\%20Files/1_Indicator\%20(Standard)/EXCEL_FILES/1_General/WPP2024_GEN_F01_DEMOGRAPHIC_INDICATORS_FULL.xlsx). The data are licensed under a CC-BY 3.0.
-
-Note that we have renamed the datafile: `data/raw/undp_pop_growth_2024.xlsx`
-
-#### G-ECON v4.0
-
-The paper uses sub-national economic and population data from the G-ECON v.4.0 database. Available for download [here](https://gecon.yale.edu/data-and-documentation-g-econ-project) under Point 5 in the Data Sets Section.
-
-#### Historical CO2 emissions
-
-The historical CO2 emissions file is available from the CESM input databsae. Accesssing and downloading CESM input data is described in the CESM Quickstart Guide (U.S. National Science Foundation, 2023). A direct download can be found [here](https://svn-ccsm-inputdata.cgd.ucar.edu/trunk/inputdata/atm/cam/ggas/).) 
-
-
 
 ## Dataset list
 
-| Data file                                                        | Source                         | Location | Notes                                                                 |
-|------------------------------------------------------------------|--------------------------------|----------|----------------------------------------------------------------------|
-| `data/raw/emissions.txt`                                         | Model Output                   | GitHub   | Not required. Reduces iterations for `scripts/decrule_calc.jl`.      |
-| `data/raw/undp_pop_growth_2024.xlsx`                             | UN DESA, Population Division, 2024 | GitHub | Historical Estimates and Medium Variant Projections used.             |
-| `data/raw/Gecon40_post_final.csv`                                | Nordhaus et al. 2006           | GitHub   |                                                                      |
-| `onlyCO2/rest/1990-01-01-00000/*`                                | Bjordal, 2025c                 | Zenodo [DOI](10.5281/zenodo.17856602) | Restart files for running NorESM2 from 1990.*                         |
-| NorESM2 input data (Zenodo)                                      | NorESM Climate Modeling Consortium, 2025  | Zenodo [DOI](https://doi.org/10.5281/zenodo.17865023) | Necessary input files for the prototype simulation. | 
-| `data/output_coupling/*`                                         | Output from NorESM2-DIAM       | GitHub  | The output files are compress with 7-zip and need to be unpacked.** |
-| `data/output_noresm2/full_couple_population.TREFHT.nc`           | Output from NorESM2            | GitHub  | NorESM2 output from the coupled run.*** |
+| Data  | File name| Path | Location | Notes                                                                 |
+|------------------------------------------------------------------|--------------------------------|----------|----------------------------------------------------------------------|----|
+| Cumulative CO2 emissions for SSP126, SSP245, SSP370, and SSP585 | `SSP_cumulative_emissions.txt`| `scripts/calculate_srm_coefficients/` | Current repo | Created from script in [NorESM2-DIAM repo](https://github.com/jennybj/coupling_noresm2_diam)  | |
+| Historical + SSP370 with only CO2 emissions | `onlyCO2.nc`   | `data/input_to_regression/` | [NorESM2-DIAM repo](https://github.com/jennybj/coupling_noresm2_diam) | |
+| SSP370 with SRM from 2030 and only CO2 emissions | `reduced_solar_const_1percent.nc`   | `data/input_to_regression/` | Current repo | |
+| SSP585 with only CO2 emissions | `ssp585_onlyCO2.nc`   | `data/input_to_regression/` | Current repo | |
+| SSP585 with SRM from 2030 and only CO2 emissions | `ssp585_reduced_solar_const_1percent.nc`   | `data/input_to_regression/` | Current repo | |
 
-GitHub refer to this repository.
-
-*For the NorESM2 restart files, the full simulation from 1850 to 2100, with restart files every 10 years until 1990 and every 5 years thereafter is available from the NIRD RDA [DOI](https://doi.org/10.11582/2025.tdi6hhfl) (Bjordal, 2025b)
-
-***The complete NorESM2 output with all variables are available from the NIRD RDA [DOI](https://doi.org/10.11582/2025.31ney5y8) (Bjordal, 2025a).
 
 ## Computational requirements
 
