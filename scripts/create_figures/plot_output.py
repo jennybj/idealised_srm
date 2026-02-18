@@ -1351,7 +1351,7 @@ print(df["gdp_per_capita_1990"]["United States"])
 print(df["cum_gdp_share"]["United States"])
 
 # Write data to file:
-df.to_csv("geoengineering_histogram_data.csv")
+df.to_csv("../../data/output_figures/geoengineering_histogram_data.csv")
 
 fig1, ax1 = plt.subplots(nrows=1, ncols=1, figsize=(10, 7))
 p_bar = plt.bar(
