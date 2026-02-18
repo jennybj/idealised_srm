@@ -59,6 +59,7 @@ The data are licensed under a Creative Commons/CC-BY-NC license. See LICENSE.txt
 
 ### Software Requirements
 
+<!--
 The replication package contains two programs to install the necessary dependencies for Julia and Python. R scripts are installed within the scripts.
 
 **Julia 1.10.4**
@@ -68,7 +69,7 @@ Run `setup/packages.jl` to install all necessary Julia packages.
 **R 4.3.1**
 
 The two R scripts automatically install 'tidyr' and 'readxl'.
-
+-->
 **Python 3.7.3**
 
 To run the Python scripts in `scripts/create_figures/` and `scripts/create_input_files/`, use the setup from `setup/environment.yml`.
