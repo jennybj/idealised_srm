@@ -37,7 +37,7 @@ pi_temperature = get_pi_temperature()
 gamma1, gamma2, rhos = get_coefficients()
 a_coeff, b_coeff, const = get_srm_coefficients()
 
-file_path = "/home/jennybj/uio/home/coupling/"
+file_path = "/home/jennybj/uio/home/coupling/"  # CHANGE
 
 # --------------------------------------------------------------------------------------
 
@@ -112,11 +112,11 @@ for isim in range(len(names)):
 
 
 # Read in Henri's data:
-srm_ai = np.loadtxt("../standalone_output/ai.txt")[:, 1 : nyears + 1].T
-srm_fp_gdp = np.loadtxt("../standalone_output/reg_gdp.txt")[:, 1 : nyears + 1].T
-srm_fp_capital = np.loadtxt("../standalone_output/capital.txt")[:, 1 : nyears + 1].T
+srm_ai = np.loadtxt("../../standalone_output/ai.txt")[:, 1 : nyears + 1].T
+srm_fp_gdp = np.loadtxt("../../standalone_output/reg_gdp.txt")[:, 1 : nyears + 1].T
+srm_fp_capital = np.loadtxt("../../standalone_output/capital.txt")[:, 1 : nyears + 1].T
 # srm_fp_emissions = np.loadtxt("standalone_output/regional_emissions.txt")[:, 1 : nyears + 1].T
-srm_fp_regtemp = np.loadtxt("../standalone_output/regional_temperature.txt")[
+srm_fp_regtemp = np.loadtxt("../../standalone_output/regional_temperature.txt")[
     :, 1 : nyears + 1
 ].T
 
