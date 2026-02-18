@@ -1,0 +1,1 @@
+../../../koding/filer/scenarios/reduced_solar_const_1percent.nc
