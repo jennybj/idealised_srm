@@ -40,7 +40,7 @@ pi_temperature = get_pi_temperature()
 gamma1, gamma2, dummy = get_coefficients()
 
 years, cumulative_emissions_ssp370, cumulative_emissions_ssp585 = np.loadtxt(
-    "SSP_cumulative_emissions.txt",
+    "../../data/input_coefficients/SSP_cumulative_emissions.txt",
     usecols=(0, 3, 4),
     skiprows=6,
     unpack=True,
