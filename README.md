@@ -48,10 +48,10 @@ The data are licensed under a Creative Commons/CC-BY-NC license. See LICENSE.txt
 | Data  | File name| Path | Location | Notes                                                                 |
 |-----------------------------------------------------------------|-------------------------------|---------------------------------------|--------------------------|------------------------------------------------|
 | Cumulative CO2 emissions for SSP126, SSP245, SSP370, and SSP585 | `SSP_cumulative_emissions.txt`| `data/input_coefficients/` | Current repo | Created from script in [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam)  | |
-| Historical + SSP370 with only CO2 emissions | `onlyCO2.nc`   | `data/input_coefficients/` | [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam) | |
-| SSP370 with SRM from 2030 and only CO2 emissions | `reduced_solar_const_1percent.nc`   | `data/input_coefficients/` | Current repo | |
-| SSP585 with only CO2 emissions | `ssp585_onlyCO2.nc`   | `data/input_coefficients/` | Current repo | |
-| SSP585 with SRM from 2030 and only CO2 emissions | `ssp585_reduced_solar_const_1percent.nc`   | `data/input_coefficients/` | Current repo | |
+| Historical + SSP370 with only CO2 emissions | `onlyCO2.nc`   | `data/input_coefficients/` | [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam) | Full output from NIRD RDA (Bjordal, 2025c)|
+| SSP370 with SRM from 2030 and only CO2 emissions | `reduced_solar_const_1percent.nc`   | `data/input_coefficients/` | Current repo | Full output from NIRD RDA (Bjordal, 2025d) |
+| SSP585 with only CO2 emissions | `ssp585_onlyCO2.nc`   | `data/input_coefficients/` | Current repo | Full output from NIRD RDA (Bjordal, 2025e) |
+| SSP585 with SRM from 2030 and only CO2 emissions | `ssp585_reduced_solar_const_1percent.nc`   | `data/input_coefficients/` | Current repo | Full output from NIRD RDA (Bjordal, 2025f) |
 | Solar forcing standard input file | `SolarForcingCMIP6piControl_c160921.nc` | `data/input_standard/` | Current repo | From the standard NorESM2 input data |
 | Solar forcing reduced 1% input file | `SolarForcing_1percent_reduced.nc` | `data/input_noresm2diam/` | Current repo | To be used from 2030 in the SRM experiments |
 
@@ -156,11 +156,26 @@ python plot_output.py
 julia make_figures.jl
 ```
 
-## List of tables and programs
+## Model output
+
+We performed two experiments---baseline and SRM implementation---with three ensemble members each. All the output from the coupled model is available from the [Norwegian Research Infrastructure Services (NIRD) Research Data Archive (RDA)](https://data.archive.sigma2.no/):
+
+| Simulation        | Location          | Reference      | Note                      | 
+|-------------------|-------------------|----------------|----------------------------------|
+| Baseline ensemble member 1 | NIRD RDA | Bjordal, J. (2025a) and Bjordal, J. (2025b) | This is the same simulation as the one presented in Bjordal et al., 2026. NorESM2 standard output and the specific coupled output are separated. |
+| Baseline ensemble member 2 | NIRD RDA | Bjordal, J. (2026a) | |
+| Baseline ensemble member 3 | NIRD RDA | Bjordal, J. (2026b) | |
+| SRM ensemble member 1 | NIRD RDA | Bjordal, J. (2026c) | |
+| SRM ensemble member 2 | NIRD RDA | Bjordal, J. (2026d) | |
+| SRM ensemble member 3 | NIRD RDA | Bjordal, J. (2026e) | |
+
+
+
+## List of figures
 
 The provided code reproduces:
 
-| Figure/Table #    | Program                  | Line Numbers | Output file                      | 
+| Figure    | Program                  | Line Numbers | Output file                      | 
 |-------------------|--------------------------|-------------|----------------------------------|
 | Fig. 1 | `scripts/create_figures/plot_output.py`| 691-845 | `figures/emissions_temperature_gdpper_compare.pdf` | 
 | Fig. 2 |...|...|...| 
@@ -175,7 +190,27 @@ The provided code reproduces:
 
 Bjordal, J., Smith Jr., A. A., Cornec, H., and Storelvmo, T.: ***NorESM2–DIAM: a coupled model for investigating global and regional climate-economy interactions***, Geosci. Model Dev., 19, 1337–1365, [DOI](https://doi.org/10.5194/gmd-19-1337-2026), 2026
 
+Bjordal, J. (2025a). ***NorESM2-DIAM prototype simulation, coupled output*** [Data set]. NIRD RDA. [DOI](https://doi.org/10.11582/2025.90v981qk)
 
+Bjordal, J. (2025b). ***NorESM2-DIAM prototype simulation, NorESM2 standard output*** [Data set]. NIRD RDA. [DOI](https://doi.org/10.11582/2025.31ney5y8)
+
+Bjordal, J. (2025c). ***NorESM2-LME Historical and SSP3-7.0 with only CO2 emissions*** [Data set]. NIRD RDA. [DOI](https://doi.org/10.11582/2025.tdi6hhfl)
+
+Bjordal, J. (2025d). ***NorESM2-LME SSP3-7.0 from 2030 with only CO2 emissions and solar forcing 1% reduced*** [Data set]. NIRD RDA. [DOI](https://doi.org/10.11582/2025.jtui66g0)
+
+Bjordal, J. (2025e). ***NorESM2-LME SSP5-8.5 with only CO2 emissions*** [Data set]. NIRD RDA. [DOI](https://doi.org/10.11582/2025.4uncny33)
+
+Bjordal, J. (2025f). ***NorESM2-LME SSP5-8.5 from 2030 with only CO2 emissions and solar forcing 1% reduced*** [Data set]. NIRD RDA. [DOI](https://doi.org/10.11582/2025.p4mv0r06)
+
+Bjordal, J. (2026a). ***NorESM2-DIAM baseline simulation - ensemble member 2*** [Data set]. NIRD RDA. [DOI](https://doi.org/10.11582/2026.8p3mr4b3)
+
+Bjordal, J. (2026b). ***NorESM2-DIAM baseline simulation - ensemble member 3*** [Data set]. NIRD RDA. [DOI](https://doi.org/10.11582/2026.kien66g0)
+
+Bjordal, J. (2026c). ***NorESM2-DIAM solar forcing 1% reduced simulation - ensemble member 1*** [Data set]. NIRD RDA. [DOI](https://doi.org/10.11582/2026.ngzr041o)
+
+Bjordal, J. (2026d). ***NorESM2-DIAM solar forcing 1% reduced simulation - ensemble member 2*** [Data set]. NIRD RDA. [DOI](https://doi.org/10.11582/2026.5louigpd)
+
+Bjordal, J. (2026e). ***NorESM2-DIAM solar forcing 1% reduced simulation - ensemble member 3*** [Data set]. NIRD RDA. [DOI](https://doi.org/10.11582/2026.q2umwad7)
 
 ---
 
