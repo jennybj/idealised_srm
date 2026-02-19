@@ -141,7 +141,7 @@ The rest of the python scripts (not for coupling) can be run on any laptop. Each
 
 ### License for Code
 
-The code is licensed under a MIT license. See [LICENSE.md](LICENSE.md) for details.
+The code is licensed under a MIT license. See [LICENSE](LICENSE) for details.
 
 <!--
 
