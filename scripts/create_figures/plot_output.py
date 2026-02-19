@@ -842,7 +842,7 @@ fig3.text(0.01, 0.34, "(c)", fontsize=16, wrap=True)
 
 fig3.subplots_adjust(left=0.1, right=0.98, top=0.96, bottom=0.05, hspace=0.1)
 
-fig3.savefig("../figures/emissions_temperature_gdpper_compare.pdf")
+fig3.savefig("../../figures/emissions_temperature_gdpper_compare.pdf")
 
 # --------------------------------------------------------------------------------------
 
@@ -1302,8 +1302,8 @@ fig5.text(0.01, 0.33, "(c)", fontsize=12, wrap=True)
 
 fig5.subplots_adjust(left=0.11, right=0.83, top=0.97, bottom=0.04, hspace=0.22)
 
-fig5.savefig("../figures/country_difference_gdpper_percent_SRM_2090s-2020s.pdf")
-fig5.savefig("../figures/country_difference_gdpper_percent_SRM_2090s-2020s.png")
+fig5.savefig("../../figures/country_difference_gdpper_percent_SRM_2090s-2020s.pdf")
+fig5.savefig("../../figures/country_difference_gdpper_percent_SRM_2090s-2020s.png")
 
 plt.close()
 
@@ -1410,7 +1410,7 @@ cb.set_label("GDP per capita in 1990\n(1990 US$)", rotation=270, size=14, labelp
 cb.ax.tick_params(labelsize=14)
 
 plt.savefig(
-    "../figures/histogram_GDPper_difference_GDP_share.pdf",
+    "../../figures/histogram_GDPper_difference_GDP_share.pdf",
     dpi=300,
     bbox_inches="tight",
 )
