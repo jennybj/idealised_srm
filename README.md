@@ -74,7 +74,7 @@ The two R scripts automatically install 'tidyr' and 'readxl'.
 -->
 **Python 3.7.3**
 
-To run the Python scripts in `scripts/create_figures/` and `scripts/create_input_files/`, use the setup from `setup/environment.yml`.
+To run the Python scripts in `scripts/create_figures/`, `scripts/create_input_files/`, and `scripts/calculate_coefficients/` use the setup from `setup/environment.yml`.
 The easiest way is to create a new conda environment from the `environment.yml` file.
 This can be done in the terminal as follows:
 
