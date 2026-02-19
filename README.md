@@ -14,7 +14,7 @@ Contributors:
 
 ## Overview
 
-An idealised Solar Radiation Management (SRM) experiment using the coupled climate-economy model NorESM2-DIAM.
+An idealised Solar Radiation Management (SRM) experiment using the coupled climate-economy model NorESM2-DIAM (Bjordal el al., 2026).
 
 This repository contains the experimental setup, modifications, and analysis code for replicating the experiments in the paper "Regional Economic Impacts and Emission Responses under Solar Radiation Modification" (in prep). The coupled NorESM2-DIAM model and implementation can be found in the [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam), except the Earth system component, NorESM2, which can be found in the [NorESM GitHub](https://github.com/NorESMhub/NorESM). The current repo focuses on:
 
@@ -128,7 +128,7 @@ The rest of the python scripts (not for coupling) can be run on any laptop. Each
 - The program `scripts/run_noresm2diam/set_up_noresm_srm_case.py` creates a new NorESM2 case (our simulation) starting in 2030 with SRM to be used in the coupling. For the baseline simulation without SRM, see the [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam).
 - The program `scripts/run_noresm2diam/couple_iterations.sh` loads modules and activates the correct conda environment before initializing the coupling script `scripts/run_noresm2diam/couple_with_decision_rules.py`.
 - The program `scripts/run_noresm2diam/couple_with_decision_rules.py` couples the two models. It reads in the last year temperature data from NorESM2, uses the decision rules as calculated by `scripts/decrule_calc.jl`, calculates the emissions of next year, and writes the emissions to an input file for NorESM2 to read.
-- The program `scripts/run_noresm2diam/calculate_fp_srm.py` is not needed for the coupling. It simply calculates the same data as the DIAM standalone (the fixed point) and writes this output to files of the same format as the coupling script, to make future calculations/comparisons easier.
+- The program `scripts/run_noresm2diam/calculate_fp_srm.py` is not needed for the coupling. It simply calculates the same data as the DIAM standalone (the fixed point) and writes this output to files of the same format as the coupling script, to make future calculations/comparisons easier. This one is for SRM, for the baseline simulation, see the [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam).
 
 <!--
 
@@ -143,82 +143,18 @@ The rest of the python scripts (not for coupling) can be run on any laptop. Each
 
 The code is licensed under a MIT license. See [LICENSE](LICENSE) for details.
 
-<!--
-
 ## Instructions to Replicators
 
-When running the coupled NorESM2-DIAM we have to set up a NorESM2 case (detailed below), which is the simulation we run with NorESM2. This simulation needs a name, hereafter know as the `CASENAME`, which will need to be specified several places. In the code, this should be indicated by `# CHANGE`.
-
-### Setup
-- Before running any program in the replication package, make sure to edit the file paths provided in all the scripts. For the python scripts, the file paths are followed by the comment `# CHANGE so that you can search through the code before running it.
-- Run the two programs in  `setup/` once on a new system to set up the
-  working environment. Details provided above under [Software Requirements](#software-requirements).
-- Download the data files referenced above and double-check that files are in the correct directories as specified by your file paths.
-- Before running any of the python script, make sure that the conda environment is activated:
-  ```bash
-  conda activate base_env
-  ```
-
-### Generate input files
-
-- Refer to the "Generate Population Input Files" Section and run the programs in the order described there. 
-- Run `scripts/create_input_files/create_initial_emissions_file.py` to create the necessary emissions input file for NorESM2. Make sure to change `case_name` to the wanted `CASENAME`, so that the name of the file is `input_emissions_CASENAME.py`.
-```bash
-python create_initial_emissions.py
-```
-Run `scripts/create_input_files/create_input_files_from_noresm_data.py to create input files need by both DIAM standalone and the coupled NorESM2-DIAM.
-```bash
-python create_input_files_from_noresm_data.py
-```
-
-### Running standalone DIAM
-
-- Run `scripts/decrule_calc.jl` to write decision rule files and fixed-point output.
-- Run `scripts/standalone_noresm2diam.jl` to simulate the standalone model and create appropriate output files.
-
-### Running NorESM2-DIAM
-
-NorESM2 needs to be run on an HPC system.
-
-- First, you need to download and set up the NorESM2 model code. This is described here: [NorESM2 Access Guide](https://noresm-docs.readthedocs.io/en/noresm2/access/access.html). For challenges with downloading and running NorESM2 in general, we refer to the *NorESM developers group*. For general NorESM2 input data (not specific to the coupling), we also refer to this group and their [User's guide](https://noresm-docs.readthedocs.io/en/noresm2/index.html), but the specific input data used in the coupled simulations have also been archived on Zenodo [DOI](https://doi.org/10.5281/zenodo.17865023) (NorESM Climate Modeling Consortium, 2025).
-  Note that setting up NorESM2 could potentially be challenging and might require help from the people that run the HPC system you use.
-  It is a good idea to check if you manage to run a standard NorESM2 simulation (a few days or months) before trying the coupled version. The coupled version isn’t necessarily harder to run, but starting with a standard simulation can make it easier to troubleshoot any issues that come up later.
-
-- Next, make sure that you copy all the needed input data for the coupling:
-
-  - Restart data for the NorESM2 case must be downloaded from Zenodo [DOI](10.5281/zenodo.17856602) (Bjordal, 2025c), and placed in a folder as specified in `set_up_noresm_case.py` as `restart_dir` or copied directly into the NorESM2 case's run folder.
-  - The scripts needed for the coupling—`module_coupling.py`, `couple_with_decision_rules.py`, and `couple_iterations.sh`—must be placed in a folder as specified in `set_up_noresm_case.py` as `input_dir` or copied directly into the NorESM2 case's folder.
-  - The decision rules, as created by `decrule_calc.jl`, must be placed in a folder as specified in `couple_with_decision_rules.py` as `dr_path`.
-  - The emissions calculated from standalone DIAM—`emissions.txt`—must be placed in a folder as specified in `couple_with_decision_rules.py` as `file_path`. This is also where the output from the coupled run will be placed.
-  - The initial emission files for NorESM2—`input_emissions_CASENAME.py`—must be placed in a folder as specified in `user_nl_cam` as `co2flux_fuel_file`. This is set both in `module_coupling.py` and `set_up_noresm_case.py`, so make sure these are the same.
-  - The input files `NorESM2_picontrol_regional_temperatures.txt`, `NorESM2_HIST_SSP370_cumulative_emissions_global_temperature.txt`, `NorESM2_HIST_SSP370_coefficients_and_RMSE.txt`, and `parse2.gin6` must be placed in a folder as specified in `module_coupling.py` as `file_path`. These can be in the same folder as above, but it’s not required.
-
-- Set up a NorESM2 case by running `set_up_noresm_case.py`:
-
-```bash
-python set_up_noresm_case.py CASENAME
-```
-This script is by no means fool proof, and might not work on your specific HPC system. (At least not without significant changes.) If not, follow the steps in the script and do them manually in the terminal. You can also see the [User's guide](https://noresm-docs.readthedocs.io/en/noresm2/index.html) for details on how to set up a case if you find the script confusing.
-- Make sure that all the scripts and input files are in the correct folders!
-- Start the coupled run:
-```bash
-cd /path/to/case_dir/CASENAME
-./case.submit
-```
-The run is started from the case folder, which is the `case\_dir` you specified in `set_up_noresm_case.py` followed by the `CASENAME`.
+To set up, run the DIAM standalone model, and finally run NorESM2-DIAM, see the instructions in [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam) and replace the scripts described above.
 
 ### Calculations and figures
 
-- Run the programs in `scripts/create_figures/` to create figures 2-15 in the paper. (These also calculate the data presented in the figures.)
+- Run the programs in `scripts/create_figures/` to create the figures in the paper. 
 
 ```bash
-python figure***.py
+python plot_output.py
 julia make_figures.jl
 ```
-
-### Details for selected scripts
-- `scripts/decrule\_calc.jl`: Calculates decision rules and writes them to a .csv format. Note that the main function `iterate()` is called twice in the script. Once using the converged emissions path and once using the SSP 3-7.0 Emissions Pathway. Both will converge to the same fixed point, but the latter requires significantly more iterations.
-
 
 ## List of tables and programs
 
@@ -226,44 +162,20 @@ The provided code reproduces:
 
 | Figure/Table #    | Program                  | Line Numbers | Output file                      | 
 |-------------------|--------------------------|-------------|----------------------------------|
-| Fig. 2 | `scripts/create_figures/make_figures.jl`| 53-63 | `figures/loggdp_1990.pdf` | 
-| Fig. 3 |`scripts/create_figures/make_figures.jl`  | 69-85 | `figures/pop2100_roma.pdf` | 
-| Fig. 4 | `scripts/create_figures/figure_damage_function.py`| 40-52 | `figures/figure_damage_function.pdf` | 
-| Fig. 5 |`scripts/create_figures/make_figures.jl`  | 91-122 |`figures/productivity_1990.pdf`| 
-| Fig. 6 | `scripts/create_figures/figure_greening_function.py`| 29-39 | `figures/figure_greening_function.pdf` | 
-| Fig. 7 | `scripts/create_figures/figure_temperature_regression.py`| 202-217 | `figures/figure_temperature_regression.pdf` | 
-| Fig. 8 |`scripts/create_figures/make_figures.jl` | 91-122 |`figures/reg_warming.pdf` | 
-| Fig. 9 | `scripts/create_figures/figure_compare_cumulative_emissions.py`| 324-381 | `figures/figure_compare_cumulative_emissions.pdf` | 
-| Fig. 10 | `scripts/create_figures/figures_model_output.py`| 419-446 | `figures/difference_emissions.pdf` | 
-| Fig. 11 | `scripts/create_figures/figures_model_output.py`| 455-543 | `figures/population_weighted_temperature_and_GDP_per_capita.pdf` | 
-| Fig. 12 | `scripts/create_figures/make_figures.jl` | 163-370 | `figures/temp.pdf`|
-| Fig. 13 | `scripts/create_figures/make_figures.jl` |380-477| `figures/gdp.pdf`| 
-| Fig. 14 | `scripts/create_figures/figures_model_output.py`| 952-1145 | `figures/country_gdpper_percent_all_noresm2-diam_2090_2099.pdf` | 
-| Fig. 15 | `scripts/create_figures/make_figures.jl` |485-529|`figures/sd_loggdp.pdf` | 
+| Fig. 1 | `scripts/create_figures/plot_output.py`| 691-845 | `figures/emissions_temperature_gdpper_compare.pdf` | 
+| Fig. 2 |...|...|...| 
+| Fig. 3 |...|...|...|
+| Fig. 4 |`scripts/create_figures/plot_output.py`  | 1014-1309 |`figures/country_difference_gdpper_percent_SRM_2090s-2020s.pdf`| 
+| Fig. 5 | `scripts/create_figures/plot_output.py`| 1314-1416 | `figures/histogram_GDPper_difference_GDP_share.pdf` | 
+| Fig. 6 | ...|...|...|
 
-Fig. 1 is also included, as `figures/NorESM2-DIAM_schematic.pdf`. However, this is not created by a script, it was made in Google slides.
 
 
 ## References
 
-Bjordal, Smith, Cornec, and Storelvmo (2025). ***NorESM2–DIAM: A coupled model for investigating global and regional climate–economy interactions***. [Manuscript submitted for publication].
+Bjordal, J., Smith Jr., A. A., Cornec, H., and Storelvmo, T.: ***NorESM2–DIAM: a coupled model for investigating global and regional climate-economy interactions***, Geosci. Model Dev., 19, 1337–1365, [DOI](https://doi.org/10.5194/gmd-19-1337-2026), 2026
 
-Bjordal, J. (2025a). ***NorESM2-DIAM prototype simulation, NorESM2 standard output*** [Data set]. NIRD RDA. [DOI](https://doi.org/10.11582/2025.31ney5y8).
 
-Bjordal, J. (2025b). ***NorESM2-LME Historical and SSP3-7.0 with only CO2 emissions*** [Data set]. NIRD RDA. [DOI](https://doi.org/10.11582/2025.tdi6hhfl).
-
-Bjordal, J. (2025c). ***NorESM2 restart files to be used for NorESM2-DIAM*** [Data set]. Zenodo. [DOI](https://doi.org/10.5281/zenodo.17856602)
-
-Nordhaus, Azam, Corderi, Hood, Makarova Victor, Mohammed,  Miltner, and Weiss (2006). ***The G-Econ Database on Gridded Output: Methods and Data, Yale Unversity***.
-
-NorESM Climate Modeling Consortium. (2025). ***NorESM2 inputdata used by NorESM2-DIAM*** [Data set]. Zenodo. [DOI](https://doi.org/10.5281/zenodo.17865023).
-
-The NorESM developers group (2020). ***Welcome to the NorESM2 User’s Guide! — NorESM documentation***, https://noresm-docs.readthedocs.io/en/latest/.
-
-United Nations, Department of Economic and Social Affairs, Population Division (2024). ***World Population Prospects 2024, Online Edition***.
-
- U.S. National Science Foundation (2023). ***CESM Quickstart Guide (CESM2.1)***, https://escomp.github.io/CESM/release-cesm2/index.html.
--->
 
 ---
 
