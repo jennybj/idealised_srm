@@ -19,9 +19,9 @@ from matplotlib.colors import (
     TwoSlopeNorm,
 )
 
-# sys.path.insert(
-#    0, "/home/jennybj/Documents/coupling_noresm2_diam/scripts/"
-# )  # CHANGE path to location on module
+sys.path.insert(
+    0, "/home/jennybj/Documents/idealised_srm/scripts/"
+)  # CHANGE path to location on module
 from module_coupling import *
 
 # --------------------------------------------------------------------------------------
