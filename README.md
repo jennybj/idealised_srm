@@ -134,15 +134,6 @@ The rest of the python scripts (not for coupling) can be run on any laptop. Each
 - The program `scripts/create_figures/plot_output.py` reads in the data produced by the coupled model, performs calculations—at grid cell, country, and global level—and produces figures.
 
 
-<!--
-
-### Running standalone DIAM
-
-- The program `scripts/decrule_calc.jl` will calculate decision rules used in the coupled run as well as generate the output files for a so-called fixed-point run where all shocks \( z_{it} \) are set to 0. It also contains code calculating the absolute and relative Euler errors as detailed in the appendix.
-- The program `scripts/standalone_noresm2diam.jl` will initiate the standalone model run reported in the paper and generate a few corresponding output files.
-
--->
-
 ### License for Code
 
 The code is licensed under a MIT license. See [LICENSE](LICENSE) for details.
