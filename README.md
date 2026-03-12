@@ -120,8 +120,8 @@ The rest of the python scripts (not for coupling) can be run on any laptop. Each
 - The program `scripts/calculate_coefficients/write_temperatures_to_files.py` reads in the NetCDF files with monthly temperature data from NorESM2 in `data/input_coefficients/`, calculates the annual means, regrid to the 1x1° grid of DIAM and writes them to .txt files for easier use.
 - The program `scripts/calculate_coefficients/calculate_coefficients.py` reads in the temperatures in the .txt files created above, use them to calculate the coefficients of the SRM temperature offset, and write them to the file `SRM_coefficients.txt`.
 
-### Calculations and figures
-- The program `scripts/create_figures/plot_output.py` reads in the data produced by the coupled model, performs calculations—at grid cell, country, and global level—and produces figures.
+### Running Standalone DIAM
+- The program `scripts/geoengi_v1.jl` will calculate decision rules used in the coupled run as well as generate the output files for a so-called fixed-point run where all shocks ( z_{it} ) are set to 0. (Corresponding to `scripts/decrule_calc.jl` in [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam).)
 
 ### Running NorESM2-DIAM
 
@@ -130,14 +130,9 @@ The rest of the python scripts (not for coupling) can be run on any laptop. Each
 - The program `scripts/run_noresm2diam/couple_with_decision_rules.py` couples the two models. It reads in the last year temperature data from NorESM2, uses the decision rules as calculated by `scripts/decrule_calc.jl`, calculates the emissions of next year, and writes the emissions to an input file for NorESM2 to read.
 - The program `scripts/run_noresm2diam/calculate_fp_srm.py` is not needed for the coupling. It simply calculates the same data as the DIAM standalone (the fixed point) and writes this output to files of the same format as the coupling script, to make future calculations/comparisons easier. This one is for SRM, for the baseline simulation, see the [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam).
 
-<!--
+### Calculations and figures
+- The program `scripts/create_figures/plot_output.py` reads in the data produced by the coupled model, performs calculations—at grid cell, country, and global level—and produces figures.
 
-### Running standalone DIAM
-
-- The program `scripts/decrule_calc.jl` will calculate decision rules used in the coupled run as well as generate the output files for a so-called fixed-point run where all shocks \( z_{it} \) are set to 0. It also contains code calculating the absolute and relative Euler errors as detailed in the appendix.
-- The program `scripts/standalone_noresm2diam.jl` will initiate the standalone model run reported in the paper and generate a few corresponding output files.
-
--->
 
 ### License for Code
 
