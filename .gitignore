@@ -1,5 +1,7 @@
 co2_concentration/
 scripts/__pycache__/
+*.png
+*.svg
 scripts/calculate_srm_coefficients/temperature_difference_region_*.pdf
 data/input_coefficients/onlyCO2.nc
 justification_statement.odt
