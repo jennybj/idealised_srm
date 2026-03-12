@@ -510,6 +510,28 @@ avg_base_global_temp = (
     - global_pi_temperature
 )
 
+base_global_gdp = np.average(
+    np.stack(
+        (
+            base_e1_sum_gdp_detrended,
+            base_e2_sum_gdp_detrended,
+            base_e3_sum_gdp_detrended,
+        ),
+        axis=0,
+    ),
+    axis=0,
+)
+srm_global_gdp = np.average(
+    np.stack(
+        (
+            srm_e1_sum_gdp_detrended,
+            srm_e2_sum_gdp_detrended,
+            srm_e3_sum_gdp_detrended,
+        ),
+        axis=0,
+    ),
+    axis=0,
+)
 base_global_gdpper = np.average(
     np.stack(
         (
@@ -706,9 +728,11 @@ for isim, sim in enumerate(simulations[2:]):
     exec("area_temp = " + sim + "_area_temp")
     exec("global_temp = " + sim + "_global_temp - global_pi_temperature")
     exec("global_gdpper = " + sim + "_sum_gdpper_detrended")
+    exec("global_gdp = " + sim + "_sum_gdp_detrended")
     global_gdpper_change = (
         100 * (global_gdpper - base_global_gdpper[0]) / base_global_gdpper[0]
     )
+    global_gdp_change = 100 * (global_gdp - base_global_gdp[0]) / base_global_gdp[0]
 
     ax3[0].plot(
         years[start_year:sim_years],
@@ -828,7 +852,7 @@ ax3[1].plot(0, 0, color="k", label="Population-weighted", linewidth=3)
 ax3[2].set_xlabel("Year", fontsize=20)
 ax3[0].set_ylabel("Emissions (GtC)", fontsize=20)
 ax3[1].set_ylabel("Temperature change (\N{DEGREE SIGN}C)", fontsize=20)
-ax3[2].set_ylabel("GDP per capita change (%)", fontsize=20)
+ax3[2].set_ylabel("GDP/capita change (%)", fontsize=20)
 
 for ax in ax3:
     ax.xaxis.set_tick_params(labelsize=16)
@@ -843,6 +867,7 @@ fig3.text(0.01, 0.34, "(c)", fontsize=16, wrap=True)
 fig3.subplots_adjust(left=0.1, right=0.98, top=0.96, bottom=0.05, hspace=0.1)
 
 fig3.savefig("../../figures/emissions_temperature_gdpper_compare.pdf")
+fig3.savefig("../../figures/emissions_temperature_gdpper_compare.png")
 
 # --------------------------------------------------------------------------------------
 
@@ -1414,5 +1439,7 @@ plt.savefig(
     dpi=300,
     bbox_inches="tight",
 )
+
+plt.savefig("../../figures/histogram_GDPper_difference_GDP_share.png")
 
 # --------------------------------------------------------------------------------------
