@@ -759,14 +759,6 @@ for isim, sim in enumerate(simulations[2:]):
         color=color,
         linestyle=":",
     )
-    #    ax1[1].plot(
-    #        years[start_year:sim_years],
-    #        global_temp[start_year:],
-    #        linewidth=1,
-    #        alpha=0.4,
-    #        color=color,
-    #        linestyle="--",
-    #    )
 
     ax1[1, 0].plot(
         years[start_year:sim_years],
@@ -804,13 +796,7 @@ ax1[0, 1].plot(
     color="blue",
     linestyle=":",
 )
-# ax1[1].plot(
-#    years[:sim_years],
-#    avg_base_global_temp,
-#    linewidth=3,
-#    color="blue",
-#    linestyle="--",
-# )
+
 ax1[1, 0].plot(
     years[:sim_years],
     100 * (base_global_gdp - base_global_gdp[0]) / base_global_gdp[0],
@@ -844,13 +830,7 @@ ax1[0, 1].plot(
     color="red",
     linestyle=":",
 )
-# ax1[1].plot(
-#    years[39:sim_years],
-#    avg_srm_global_temp[39:],
-#    linewidth=3,
-#    color="red",
-#    linestyle="--",
-# )
+
 ax1[1, 0].plot(
     years[39:sim_years],
     100 * (srm_global_gdp[39:] - base_global_gdp[0]) / base_global_gdp[0],
@@ -866,7 +846,6 @@ ax1[1, 1].plot(
 
 ax1[0, 1].plot(0, 0, color="k", label="Area-weighted", linewidth=3, linestyle=":")
 ax1[0, 1].plot(0, 0, color="k", label="Population-weighted", linewidth=3)
-# ax1[1].plot(0, 0, color="k", label="Global", linewidth=3, linestyle="--")
 
 
 ax1[1, 0].set_xlabel("Year", fontsize=20)
@@ -1222,82 +1201,6 @@ srm_dgdpper_global_decade = (
     / np.average(srm_fp_sum_gdpper_detrended[30:40])
 )
 
-print(
-    np.average(base_global_gdpper[10 * (ndecades - 1) : 10 * ndecades]),
-    np.average(base_fp_sum_gdpper_detrended[30:40]),
-    np.average(base_global_gdpper[30:40]),
-    base_dgdpper_global_decade,
-)
-base_global_gdpper_change = (
-    100 * (base_global_gdpper - base_global_gdpper[0]) / base_global_gdpper[0]
-)
-print(
-    np.average(base_global_gdpper_change[-10:]),
-    np.average(base_global_gdpper_change[30:40]),
-    np.average(base_global_gdpper_change[-10:])
-    - np.average(base_global_gdpper_change[30:40]),
-)
-print(base_global_gdpper_change)
-
-print(
-    np.average(srm_global_gdpper[10 * (ndecades - 1) : 10 * ndecades]),
-    np.average(srm_fp_sum_gdpper_detrended[30:40]),
-    np.average(srm_global_gdpper[30:40]),
-    srm_dgdpper_global_decade,
-)
-srm_global_gdpper_change = (
-    100 * (srm_global_gdpper - base_global_gdpper[0]) / base_global_gdpper[0]
-)
-print(
-    np.average(srm_global_gdpper_change[-10:]),
-    np.average(srm_global_gdpper_change[30:40]),
-    np.average(srm_global_gdpper_change[-10:])
-    - np.average(srm_global_gdpper_change[30:40]),
-)
-print(srm_global_gdpper_change)
-
-srm_dgdpper_country_decade = (
-    100
-    * (
-        np.average(srm_gdpper_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0)
-        - expected_gdpper_2020s
-    )
-    / expected_gdpper_2020s
-)
-
-print(np.average(srm_gdpper_country[-10:, :], axis=0))
-print(
-    np.sum(
-        np.average(srm_gdpper_country[-10:, :], axis=0)
-        * np.average(population_countries[-10:, :], axis=0)
-    )
-    / np.sum(np.average(population_countries[-10:, :], axis=0))
-)
-print(np.average(srm_gdpper_country[30:40, :], axis=0))
-global_2020 = np.sum(
-    np.average(srm_gdpper_country[30:40, :], axis=0)
-    * np.average(population_countries[30:40, :], axis=0)
-) / np.sum(np.average(population_countries[30:40, :], axis=0))
-print(global_2020)
-
-# --- Country contributions to total change ---
-# Contribution = weight of each country in 2100 minus 2020 weight
-w2020 = np.average(population_countries[30:40, :], axis=0) / np.sum(
-    np.average(population_countries[30:40, :], axis=0)
-)
-w2100 = np.average(population_countries[-10:, :], axis=0) / np.sum(
-    np.average(population_countries[-10:, :], axis=0)
-)
-country_contribution = (
-    np.average(srm_gdpper_country[-10:, :], axis=0) * w2100
-    - np.average(srm_gdpper_country[30:40, :], axis=0) * w2020
-) / global_2020
-
-for c, country in enumerate(all_countries):
-    print(country, country_contribution[c])
-
-exit()
-
 dpopulation_global_decade = (
     100
     * (
@@ -1356,17 +1259,6 @@ add_bubble_label(
     title="Year 2020\npopulation",
 )
 
-"""
-# Generate legend to indicate GDP size:
-add_bubble_label(
-    fig=fig5,
-    position=[0.83, 0.243, 0.02, 0.4],
-    labels=["100$", "1000$", "10 000$", "100 000$"],
-    label_values=[np.sqrt(1e2), np.sqrt(1e3), np.sqrt(1e4), np.sqrt(1e5)],
-    title="Initial\nGDP/capita",
-)
-"""
-
 # Generate color bar to indicate population change:
 cbar_ax = fig5.add_axes([0.86, 0.699, 0.02, 0.14])
 cbar = fig5.colorbar(pscat1, cax=cbar_ax)
@@ -1380,19 +1272,6 @@ cbar.set_label(
 cbar.set_ticks([-100, 0, 100, 200, 300])
 cbar.ax.tick_params(labelsize=10)
 
-
-"""
-# Generate color bar to indicate 2000 temperature:
-cbar_ax = fig5.add_axes([0.86, 0.369, 0.02, 0.14])
-cbar = fig5.colorbar(pscat2, ticks=color_bins[1:-1], cax=cbar_ax)
-cbar.set_label(
-    "Initial temperature (\N{DEGREE SIGN}C)",
-    fontsize=12,
-    rotation=270,
-    labelpad=18,
-)
-cbar.ax.tick_params(labelsize=10)
-"""
 for ax in ax5:
     ax.xaxis.set_tick_params(labelsize=12)
     ax.yaxis.set_tick_params(labelsize=12)
