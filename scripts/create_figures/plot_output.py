@@ -670,6 +670,7 @@ for c, country in enumerate(chosen_countries):
                 + "_regtemp[iyear, :], indices, weights=pops[iyear, :])"
             )
 
+
 base_dtemp_country = np.average(
     np.stack(
         (base_e1_dtemp_country, base_e2_dtemp_country, base_e3_dtemp_country), axis=0
@@ -710,7 +711,7 @@ start_temp_country = np.average(srm_fp_temp_country[:10, :], axis=0)
 
 # PLOT EMISSIONS AND AVERAGE TEMPERATURE AGAINST TIME
 
-fig3, ax3 = plt.subplots(nrows=3, ncols=1, figsize=(10, 16))
+fig1, ax1 = plt.subplots(nrows=2, ncols=2, figsize=(18, 12))
 
 years = np.arange(1990, 2101)
 
@@ -734,7 +735,7 @@ for isim, sim in enumerate(simulations[2:]):
     )
     global_gdp_change = 100 * (global_gdp - base_global_gdp[0]) / base_global_gdp[0]
 
-    ax3[0].plot(
+    ax1[0, 0].plot(
         years[start_year:sim_years],
         sum_actual_emissions[start_year:] / 1e3,
         linewidth=1,
@@ -742,7 +743,7 @@ for isim, sim in enumerate(simulations[2:]):
         color=color,
     )
 
-    ax3[1].plot(
+    ax1[0, 1].plot(
         years[start_year:sim_years],
         pop_temp[start_year:],
         linewidth=1,
@@ -750,7 +751,7 @@ for isim, sim in enumerate(simulations[2:]):
         color=color,
     )
 
-    ax3[1].plot(
+    ax1[0, 1].plot(
         years[start_year:sim_years],
         area_temp[start_year:],
         linewidth=1,
@@ -758,7 +759,7 @@ for isim, sim in enumerate(simulations[2:]):
         color=color,
         linestyle=":",
     )
-    #    ax3[1].plot(
+    #    ax1[1].plot(
     #        years[start_year:sim_years],
     #        global_temp[start_year:],
     #        linewidth=1,
@@ -767,7 +768,14 @@ for isim, sim in enumerate(simulations[2:]):
     #        linestyle="--",
     #    )
 
-    ax3[2].plot(
+    ax1[1, 0].plot(
+        years[start_year:sim_years],
+        global_gdp_change[start_year:],
+        linewidth=1,
+        alpha=0.4,
+        color=color,
+    )
+    ax1[1, 1].plot(
         years[start_year:sim_years],
         global_gdpper_change[start_year:],
         linewidth=1,
@@ -776,98 +784,118 @@ for isim, sim in enumerate(simulations[2:]):
     )
 
 
-ax3[0].plot(
+ax1[0, 0].plot(
     years[:sim_years],
     avg_base_sum_actual_emissions / 1e3,
     linewidth=3,
     color="blue",
     label="Without SRM",
 )
-ax3[1].plot(
+ax1[0, 1].plot(
     years[:sim_years],
     avg_base_pop_temp,
     linewidth=3,
     color="blue",
 )
-ax3[1].plot(
+ax1[0, 1].plot(
     years[:sim_years],
     avg_base_area_temp,
     linewidth=3,
     color="blue",
     linestyle=":",
 )
-# ax3[1].plot(
+# ax1[1].plot(
 #    years[:sim_years],
 #    avg_base_global_temp,
 #    linewidth=3,
 #    color="blue",
 #    linestyle="--",
 # )
-ax3[2].plot(
+ax1[1, 0].plot(
+    years[:sim_years],
+    100 * (base_global_gdp - base_global_gdp[0]) / base_global_gdp[0],
+    linewidth=3,
+    color="blue",
+)
+ax1[1, 1].plot(
     years[:sim_years],
     100 * (base_global_gdpper - base_global_gdpper[0]) / base_global_gdpper[0],
     linewidth=3,
     color="blue",
 )
 
-ax3[0].plot(
+ax1[0, 0].plot(
     years[39:sim_years],
     avg_srm_sum_actual_emissions[39:] / 1e3,
     linewidth=3,
     color="red",
     label="With SRM",
 )
-ax3[1].plot(
+ax1[0, 1].plot(
     years[39:sim_years],
     avg_srm_pop_temp[39:],
     linewidth=3,
     color="red",
 )
-ax3[1].plot(
+ax1[0, 1].plot(
     years[39:sim_years],
     avg_srm_area_temp[39:],
     linewidth=3,
     color="red",
     linestyle=":",
 )
-# ax3[1].plot(
+# ax1[1].plot(
 #    years[39:sim_years],
 #    avg_srm_global_temp[39:],
 #    linewidth=3,
 #    color="red",
 #    linestyle="--",
 # )
-ax3[2].plot(
+ax1[1, 0].plot(
+    years[39:sim_years],
+    100 * (srm_global_gdp[39:] - base_global_gdp[0]) / base_global_gdp[0],
+    linewidth=3,
+    color="red",
+)
+ax1[1, 1].plot(
     years[39:sim_years],
     100 * (srm_global_gdpper[39:] - base_global_gdpper[0]) / base_global_gdpper[0],
     linewidth=3,
     color="red",
 )
 
-ax3[1].plot(0, 0, color="k", label="Area-weighted", linewidth=3, linestyle=":")
-ax3[1].plot(0, 0, color="k", label="Population-weighted", linewidth=3)
-# ax3[1].plot(0, 0, color="k", label="Global", linewidth=3, linestyle="--")
+ax1[0, 1].plot(0, 0, color="k", label="Area-weighted", linewidth=3, linestyle=":")
+ax1[0, 1].plot(0, 0, color="k", label="Population-weighted", linewidth=3)
+# ax1[1].plot(0, 0, color="k", label="Global", linewidth=3, linestyle="--")
 
 
-ax3[2].set_xlabel("Year", fontsize=20)
-ax3[0].set_ylabel("Emissions (GtC)", fontsize=20)
-ax3[1].set_ylabel("Temperature change (\N{DEGREE SIGN}C)", fontsize=20)
-ax3[2].set_ylabel("GDP/capita change (%)", fontsize=20)
+ax1[1, 0].set_xlabel("Year", fontsize=20)
+ax1[1, 1].set_xlabel("Year", fontsize=20)
+ax1[0, 0].set_ylabel("Emissions (GtC)", fontsize=20)
+ax1[0, 1].set_ylabel("Temperature change (\N{DEGREE SIGN}C)", fontsize=20)
+ax1[1, 0].set_ylabel("GDP change (%)", fontsize=20)
+ax1[1, 1].set_ylabel("GDP/capita change (%)", fontsize=20)
 
-for ax in ax3:
+for ax in ax1.flatten():
     ax.xaxis.set_tick_params(labelsize=16)
     ax.yaxis.set_tick_params(labelsize=16)
-    ax.legend(fontsize=20)
     ax.set_xlim(1985, 2105)
 
-fig3.text(0.01, 0.98, "(a)", fontsize=16, wrap=True)
-fig3.text(0.01, 0.65, "(b)", fontsize=16, wrap=True)
-fig3.text(0.01, 0.34, "(c)", fontsize=16, wrap=True)
+ax1[0, 0].legend(fontsize=20)
+ax1[0, 1].legend(fontsize=20)
 
-fig3.subplots_adjust(left=0.1, right=0.98, top=0.96, bottom=0.05, hspace=0.1)
 
-fig3.savefig("../../figures/emissions_temperature_gdpper_compare.pdf")
-fig3.savefig("../../figures/emissions_temperature_gdpper_compare.png")
+fig1.text(0.01, 0.98, "(a)", fontsize=16, wrap=True)
+fig1.text(0.51, 0.98, "(b)", fontsize=16, wrap=True)
+fig1.text(0.01, 0.51, "(c)", fontsize=16, wrap=True)
+fig1.text(0.51, 0.51, "(d)", fontsize=16, wrap=True)
+
+fig1.subplots_adjust(
+    left=0.05, right=0.98, top=0.96, bottom=0.075, hspace=0.12, wspace=0.14
+)
+
+fig1.savefig("../../figures/emissions_temperature_gdp_gdpper_compare.pdf")
+fig1.savefig("../../figures/emissions_temperature_gdp_gdpper_compare.png")
 
 # --------------------------------------------------------------------------------------
 
@@ -984,16 +1012,11 @@ print(ndecades, 10 * (ndecades - 1), 10 * ndecades)
 
 expected_gdpper_start = np.average(srm_fp_gdpper_country[:10, :], axis=0)
 expected_gdpper_2020s = np.average(srm_fp_gdpper_country[30:40, :], axis=0)
-
-expected_srm_gdpper_country_decade = (
-    100
-    * (
-        np.average(
-            srm_fp_gdpper_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0
-        )
-        - expected_gdpper_2020s
-    )
-    / expected_gdpper_2020s
+print(
+    "gdpper 2020s:",
+    np.sum(expected_gdpper_2020s),
+    np.sum(np.average(srm_gdpper_country[30:40, :], axis=0)),
+    np.sum(np.average(base_gdpper_country[30:40, :], axis=0)),
 )
 
 srm_dgdpper_country_decade = (
@@ -1198,6 +1221,83 @@ srm_dgdpper_global_decade = (
     )
     / np.average(srm_fp_sum_gdpper_detrended[30:40])
 )
+
+print(
+    np.average(base_global_gdpper[10 * (ndecades - 1) : 10 * ndecades]),
+    np.average(base_fp_sum_gdpper_detrended[30:40]),
+    np.average(base_global_gdpper[30:40]),
+    base_dgdpper_global_decade,
+)
+base_global_gdpper_change = (
+    100 * (base_global_gdpper - base_global_gdpper[0]) / base_global_gdpper[0]
+)
+print(
+    np.average(base_global_gdpper_change[-10:]),
+    np.average(base_global_gdpper_change[30:40]),
+    np.average(base_global_gdpper_change[-10:])
+    - np.average(base_global_gdpper_change[30:40]),
+)
+print(base_global_gdpper_change)
+
+print(
+    np.average(srm_global_gdpper[10 * (ndecades - 1) : 10 * ndecades]),
+    np.average(srm_fp_sum_gdpper_detrended[30:40]),
+    np.average(srm_global_gdpper[30:40]),
+    srm_dgdpper_global_decade,
+)
+srm_global_gdpper_change = (
+    100 * (srm_global_gdpper - base_global_gdpper[0]) / base_global_gdpper[0]
+)
+print(
+    np.average(srm_global_gdpper_change[-10:]),
+    np.average(srm_global_gdpper_change[30:40]),
+    np.average(srm_global_gdpper_change[-10:])
+    - np.average(srm_global_gdpper_change[30:40]),
+)
+print(srm_global_gdpper_change)
+
+srm_dgdpper_country_decade = (
+    100
+    * (
+        np.average(srm_gdpper_country[10 * (ndecades - 1) : 10 * ndecades, :], axis=0)
+        - expected_gdpper_2020s
+    )
+    / expected_gdpper_2020s
+)
+
+print(np.average(srm_gdpper_country[-10:, :], axis=0))
+print(
+    np.sum(
+        np.average(srm_gdpper_country[-10:, :], axis=0)
+        * np.average(population_countries[-10:, :], axis=0)
+    )
+    / np.sum(np.average(population_countries[-10:, :], axis=0))
+)
+print(np.average(srm_gdpper_country[30:40, :], axis=0))
+global_2020 = np.sum(
+    np.average(srm_gdpper_country[30:40, :], axis=0)
+    * np.average(population_countries[30:40, :], axis=0)
+) / np.sum(np.average(population_countries[30:40, :], axis=0))
+print(global_2020)
+
+# --- Country contributions to total change ---
+# Contribution = weight of each country in 2100 minus 2020 weight
+w2020 = np.average(population_countries[30:40, :], axis=0) / np.sum(
+    np.average(population_countries[30:40, :], axis=0)
+)
+w2100 = np.average(population_countries[-10:, :], axis=0) / np.sum(
+    np.average(population_countries[-10:, :], axis=0)
+)
+country_contribution = (
+    np.average(srm_gdpper_country[-10:, :], axis=0) * w2100
+    - np.average(srm_gdpper_country[30:40, :], axis=0) * w2020
+) / global_2020
+
+for c, country in enumerate(all_countries):
+    print(country, country_contribution[c])
+
+exit()
+
 dpopulation_global_decade = (
     100
     * (
