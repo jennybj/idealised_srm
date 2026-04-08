@@ -66,12 +66,13 @@ The replication package contains two programs to install the necessary dependenc
 
 **Julia 1.10.4**
 
-Run `setup/packages.jl` to install all necessary Julia packages.
+Run `setup/install_packages.jl` to install all necessary Julia packages.
+Note that the GenericMappingTools (GMT) require a separate installation via homebrew.
 
-**R 4.3.1**
-
-The two R scripts automatically install 'tidyr' and 'readxl'.
--->
+Simply run: 
+```bash
+julia install_packages.jl
+```
 **Python 3.7.3**
 
 To run the Python scripts in `scripts/create_figures/`, `scripts/create_input_files/`, and `scripts/calculate_coefficients/` use the setup from `setup/environment.yml`.
