@@ -55,7 +55,8 @@ The data are licensed under a Creative Commons/CC-BY-NC license. See LICENSE.txt
 | Solar forcing standard input file | `SolarForcingCMIP6piControl_c160921.nc` | `data/input_standard/` | Current repo | From the standard NorESM2 input data |
 | Solar forcing reduced 1% input file | `SolarForcing_1percent_reduced.nc` | `data/input_noresm2diam/` | Current repo | To be used from 2030 in the SRM experiments |
 |Baseline Economic Data | `parse2.gin6` | `data/standalone_input_files/` | Current repo | Based on Nordhaus' most recent G-Econ dataset |
-
+|Baseline Population Numbers Data | `regpop4.pop` | `data/processed/` | [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam) | Based on UNDP World Population Prospects (see repo for full details) |
+|Baseline Population Growth Rate Data | `regpop4.grate` | `data/processed/` | [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam) | Based on UNDP World Population Prospects (see repo for full details) |
 
 ## Computational requirements
 
