@@ -134,7 +134,7 @@ The rest of the python scripts (not for coupling) can be run on any laptop. Each
 ### Calculations and figures
 - The program `scripts/create_figures/plot_output.py` reads in the data produced by the coupled model, performs calculations—at grid cell, country, and global level—and produces figures.
 
-- The program `scripts/make_figures.jl`reads in the data produced by the coupled model, performs calculations—at grid cell, country, and global level—and produces figures.
+- The program `scripts/create_figures/make_figures.jl`reads in the data produced by the coupled model, performs calculations—at grid cell, country, and global level—and produces figures.
 - 
 ### License for Code
 
@@ -175,11 +175,11 @@ The provided code reproduces:
 | Figure    | Program                  | Line Numbers | Output file                      | 
 |-------------------|--------------------------|-------------|----------------------------------|
 | Fig. 1 | `scripts/create_figures/plot_output.py`| 691-845 | `figures/emissions_temperature_gdpper_compare.pdf` | 
-| Fig. 2 |...|...|...| 
-| Fig. 3 |...|...|...|
+| Fig. 2 |`scripts/create_figures/make_figures.jl`|195-217| `figures/no_srm_tempdiff_linear.pdf`, `figures/srm_tempdiff_linear.pdf`, `figures/tempdiff_2100_linear.pdf` | 
+| Fig. 3 |`scripts/create_figures/make_figures.jl`|352-375|`figures/nosrm_gdp_pct_change_sym70.pdf`, `figures/srm_gdp_pct_change_sym70.pdf`, `figures/gdp_pct_change_diff_sym70.pdf`|
 | Fig. 4 |`scripts/create_figures/plot_output.py`  | 1014-1309 |`figures/country_difference_gdpper_percent_SRM_2090s-2020s.pdf`| 
 | Fig. 5 | `scripts/create_figures/plot_output.py`| 1314-1416 | `figures/histogram_GDPper_difference_GDP_share.pdf` | 
-| Fig. 6 | ...|...|...|
+| Fig. 6 |`scripts/create_figures/make_figures.jl`|218-350|`figures/pop_90_10_ratio_srm_nosrm.png`|
 
 
 
