@@ -134,7 +134,8 @@ The rest of the python scripts (not for coupling) can be run on any laptop. Each
 ### Calculations and figures
 - The program `scripts/create_figures/plot_output.py` reads in the data produced by the coupled model, performs calculations—at grid cell, country, and global level—and produces figures.
 
-
+- The program `scripts/make_figures.jl`reads in the data produced by the coupled model, performs calculations—at grid cell, country, and global level—and produces figures.
+- 
 ### License for Code
 
 The code is licensed under a MIT license. See [LICENSE](LICENSE) for details.
