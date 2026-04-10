@@ -14,7 +14,7 @@ Contributors:
 
 ## Overview
 
-An idealised Solar Radiation Management (SRM) experiment using the coupled climate-economy model NorESM2-DIAM (Bjordal el al., 2026).
+An idealised Solar Radiation Modification (SRM) experiment using the coupled climate-economy model NorESM2-DIAM (Bjordal el al., 2026).
 
 This repository contains the experimental setup, modifications, and analysis code for replicating the experiments in the paper "Regional Economic Impacts and Emission Responses under Solar Radiation Modification" (in prep). The coupled NorESM2-DIAM model and implementation can be found in the [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam), except the Earth system component, NorESM2, which can be found in the [NorESM GitHub](https://github.com/NorESMhub/NorESM). The current repo focuses on:
 
