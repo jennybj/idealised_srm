@@ -6,9 +6,9 @@ Contributors:
   - Anthony A. Smith, Jr.
   - Trude Storelvmo
 ---
-<!--
-[![DOI](https://zenodo.org/badge/948414289.svg)](https://doi.org/10.5281/zenodo.17176879)
--->
+
+[![DOI](https://zenodo.org/badge/1130327370.svg)](https://doi.org/10.5281/zenodo.19494361)
+
 
 # README and Guidance
 
