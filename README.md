@@ -61,11 +61,6 @@ The data are licensed under a Creative Commons/CC-BY-NC license. See LICENSE.txt
 ## Computational requirements
 
 
-### Software Requirements
-
-<!--
-The replication package contains two programs to install the necessary dependencies for Julia and Python. R scripts are installed within the scripts.
-
 **Julia 1.10.4**
 
 Run `setup/install_packages.jl` to install all necessary Julia packages.
@@ -77,7 +72,7 @@ julia install_packages.jl
 ```
 **Python 3.7.3**
 
-To run the Python scripts in `scripts/create_figures/`, `scripts/create_input_files/`, and `scripts/calculate_coefficients/` use the setup from `setup/environment.yml`.
+To run the Python scripts in `scripts/create_figures/`, `scripts/create_input_files/`, and `scripts/calculate_srm_coefficients/` use the setup from `setup/environment.yml`.
 The easiest way is to create a new conda environment from the `environment.yml` file.
 This can be done in the terminal as follows:
 
@@ -86,11 +81,11 @@ conda env create -f environment.yml
 conda activate base_env
 ```
 
-The first command need only be run once, while the second activates the conda environment `base_env` (as specified by the file) and must be activated before running the scripts.
+The first command needs to be run only once, while the second activates the conda environment `base_env` (as specified by the file) and must be activated before running the scripts.
 
 **Running NorESM2-DIAM on HPC system**
 
-The scripts in `scripts/running_noresm2diam/` are used to run the coupled model and must be done on a HPC system. To set up and run the mode, follow the instructions from the [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam) and replace the corresponding files with the ones in the current repository.
+The scripts in `scripts/run_noresm2diam/` are used to run the coupled model and must be done on a HPC system. To set up and run the mode, follow the instructions from the [NorESM2-DIAM GitHub](https://github.com/jennybj/coupling_noresm2_diam) and replace the corresponding files with the ones in the current repository.
 
 
 <!--
